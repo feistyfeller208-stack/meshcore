@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>MeshCore</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09111a;
+  --bg2:#0d1622;
+  --panel:#121e2d;
+  --panel2:#172536;
+  --panel3:#1d2d41;
+  --line:#2a3c55;
+  --line2:#415a7d;
+  --text:#e8eef7;
+  --muted:#93a6bf;
+  --soft:#6d819d;
+  --blue:#6b95f5;
+  --blue2:#4f76d4;
+  --green:#88d7b4;
+  --green2:#61b690;
+  --red:#d78998;
+  --red2:#b96475;
+  --ink:#08101a;
+  --shadow:0 18px 42px rgba(0,0,0,.36);
+  --inset:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -2px 0 rgba(0,0,0,.32);
+}
+html,body{height:100%;background:radial-gradient(circle at top,#152338 0%,#0b131e 48%,#070d14 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+body{display:flex}
+button,input,textarea{font:inherit}
+button{border:none;cursor:pointer}
+textarea,input{outline:none}
+
+#app{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns:92px 1fr;
+  min-width:0;
+  min-height:0;
+}
+
+#rail{
+  background:linear-gradient(180deg,#101927,#0c141f);
+  border-right:1px solid #172538;
+  box-shadow:var(--inset);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  padding:14px 10px;
+}
+#brand{
+  width:62px;height:62px;border-radius:18px;
+  background:linear-gradient(180deg,#23354d,#182536);
+  border:1px solid #48617f;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 0 rgba(0,0,0,.35), 0 10px 24px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;letter-spacing:.08em;color:#edf3ff;
+}
+#nav{
+  width:100%;
+  display:flex;flex-direction:column;gap:10px;
+}
+.nav-btn{
+  width:100%;height:58px;border-radius:16px;
+  background:linear-gradient(180deg,#293b54,#1b2939);
+  color:#d8e2f1;
+  border:1px solid #50698d;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 0 rgba(0,0,0,.36), 0 10px 18px rgba(0,0,0,.24);
+  font-size:11px;font-weight:800;letter-spacing:.08em;
+  transition:.16s;
+}
+.nav-btn:hover{filter:brightness(1.06)}
+.nav-btn:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.2), 0 4px 10px rgba(0,0,0,.18)}
+.nav-btn.active{
+  background:linear-gradient(180deg,#3a5480,#263a57);
+  border-color:#7da0df;
+  color:#fff;
+}
+#main{
+  min-width:0;min-height:0;
+  display:grid;
+  grid-template-rows:78px 1fr;
+}
+#topbar{
+  background:linear-gradient(180deg,#132031,#101a29);
+  border-bottom:1px solid #1d2b40;
+  box-shadow:var(--inset);
+  padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+#title-wrap{min-width:0}
+#screenTitle{font-size:19px;font-weight:900;letter-spacing:.01em}
+#screenSub{font-size:12px;color:var(--muted);margin-top:3px}
+#peerSummary{
+  min-width:210px;max-width:48%;
+  background:linear-gradient(180deg,#1b2b40,#152232);
+  border:1px solid var(--line2);
+  border-radius:18px;
+  box-shadow:var(--inset), 0 10px 24px rgba(0,0,0,.24);
+  padding:11px 14px;
+  display:flex;align-items:center;gap:12px;
+}
+#peerBadge{
+  width:40px;height:40px;border-radius:13px;flex:0 0 auto;
+  background:linear-gradient(180deg,#304863,#223349);
+  border:1px solid #59759d;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), inset 0 -2px 0 rgba(0,0,0,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;color:#eef4ff;
+}
+#peerSummaryMeta{min-width:0}
+#peerNameTop{font-size:14px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#peerIdTop,#peerStateTop{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+#content{position:relative;min-width:0;min-height:0}
+.screen{position:absolute;inset:0;display:none}
+.screen.active{display:block}
+.view{
+  height:100%;
+  overflow:auto;
+  padding:18px;
+}
+.grid2{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:18px;
+}
+.grid2.tight{grid-template-columns:1fr 1fr}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+.card{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--inset), var(--shadow);
+  padding:18px;
+}
+.cardTitle{
+  font-size:15px;font-weight:900;letter-spacing:.02em;margin-bottom:14px;
+}
+.label{
+  font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;
+}
+.input,.textarea,.code{
+  width:100%;
+  background:linear-gradient(180deg,#0f1825,#0b121b);
+  border:1px solid #31455f;
+  color:var(--text);
+  border-radius:16px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.03);
+}
+.input,.textarea{padding:13px 14px}
+.textarea{resize:vertical;min-height:104px;line-height:1.55}
+.code{
+  padding:14px;
+  min-height:110px;
+  max-height:210px;
+  overflow:auto;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:11px;
+  line-height:1.5;
+  word-break:break-all;
+}
+.input:focus,.textarea:focus{
+  border-color:#6d8fc5;
+  box-shadow:0 0 0 3px rgba(107,149,245,.13), inset 0 2px 5px rgba(0,0,0,.28);
+}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  padding:12px 16px;
+  border-radius:16px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.06em;
+  border:1px solid #5977a4;
+  background:linear-gradient(180deg,#304969,#203248);
+  color:#eef3fb;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 0 rgba(0,0,0,.3), 0 10px 18px rgba(0,0,0,.24);
+  transition:.16s;
+}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.22), 0 4px 8px rgba(0,0,0,.18)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}
+.btn.primary{
+  background:linear-gradient(180deg,var(--blue),var(--blue2));
+  border-color:#9db8ff;
+  color:#081222;
+}
+.btn.good{
+  background:linear-gradient(180deg,var(--green),var(--green2));
+  border-color:#c9f3e0;
+  color:#0b1712;
+}
+.btn.danger{
+  background:linear-gradient(180deg,var(--red),var(--red2));
+  border-color:#f1c3cc;
+  color:#20080d;
+}
+.btn.small{padding:9px 12px;border-radius:13px;font-size:11px}
+.note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+.kv{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:8px 12px;
+  font-size:13px;
+  align-items:start;
+}
+.kv .k{color:var(--muted);font-weight:800}
+.kv .v{word-break:break-all}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.sep{height:1px;background:linear-gradient(90deg,transparent,#30445f,transparent)}
+.statusPill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 12px;border-radius:999px;
+  background:linear-gradient(180deg,#1b2a3d,#132031);
+  border:1px solid #415a7d;
+  box-shadow:var(--inset);
+  font-size:12px;font-weight:800;color:#dce6f4;
+}
+.dot{
+  width:9px;height:9px;border-radius:50%;
+  background:#d17888;
+  box-shadow:0 0 0 rgba(0,0,0,0);
+}
+.dot.on{background:#7ed4ad;box-shadow:0 0 14px rgba(126,212,173,.5)}
+.tag{
+  display:inline-block;
+  padding:7px 10px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#213247,#182537);
+  border:1px solid #465f82;
+  box-shadow:var(--inset);
+  font-size:11px;font-weight:800;color:#dbe6f6
+}
+
+#chatScreen .view,#filesScreen .view,#notesScreen .view,#youScreen .view{display:flex;flex-direction:column;height:100%}
+#chatLayout{
+  height:100%;
+  display:grid;
+  grid-template-rows:1fr auto;
+  gap:16px;
+}
+#messagesWrap{
+  min-height:0;
+  overflow:auto;
+  padding:6px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.msg{
+  max-width:min(74%,760px);
+  display:flex;flex-direction:column;
+}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.msg.peer{align-self:flex-start;align-items:flex-start}
+.msg.sys{align-self:center;max-width:92%}
+.bubble{
+  padding:13px 15px;
+  border-radius:20px;
+  line-height:1.55;
+  font-size:14px;
+  white-space:pre-wrap;
+  word-break:break-word;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 12px 18px rgba(0,0,0,.18);
+}
+.msg.me .bubble{
+  background:linear-gradient(180deg,#35507a,#24364f);
+  border:1px solid #6f90bd;
+  border-bottom-right-radius:8px;
+}
+.msg.peer .bubble{
+  background:linear-gradient(180deg,#1a2739,#142031);
+  border:1px solid #344b68;
+  border-bottom-left-radius:8px;
+}
+.msg.sys .bubble{
+  background:linear-gradient(180deg,#161f2b,#111822);
+  border:1px solid #263648;
+  border-radius:14px;
+  color:var(--muted);
+  font-size:12px;
+  text-align:center;
+}
+.msgMeta{
+  font-size:11px;color:var(--muted);margin-top:6px
+}
+#composer{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:10px;
+  align-items:end;
+}
+#chatInput{min-height:56px;max-height:150px;resize:none}
+
+#filesTop{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px
+}
+#fileList{
+  min-height:0;overflow:auto;
+  display:flex;flex-direction:column;gap:12px;padding:2px
+}
+.fileItem{
+  display:grid;
+  grid-template-columns:64px 1fr auto;
+  gap:14px;align-items:center;
+  background:linear-gradient(180deg,#1a2739,#142031);
+  border:1px solid #344b68;
+  border-radius:20px;
+  padding:14px;
+  box-shadow:var(--inset), 0 12px 20px rgba(0,0,0,.18);
+}
+.fileExt{
+  width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(180deg,#2b415f,#1f3149);
+  border:1px solid #6381ad;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), inset 0 -2px 0 rgba(0,0,0,.28);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;letter-spacing:.08em;color:#eef4ff
+}
+.fileName{font-size:14px;font-weight:900;word-break:break-word}
+.fileSub{font-size:12px;color:var(--muted);margin-top:4px}
+.progress{
+  height:9px;border-radius:999px;overflow:hidden;
+  margin-top:10px;background:#0c131d;border:1px solid #263648;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.45)
+}
+.progress > div{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#7fb3ff,#5e88ee);
+  border-radius:999px;
+  transition:width .16s;
+}
+#notesBar{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+#notesArea{
+  flex:1;min-height:0;resize:none;
+  font-size:14px;line-height:1.65
+}
+#youGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.hidden{display:none!important}
+
+@media (max-width:980px){
+  #app{grid-template-columns:76px 1fr}
+  .grid2,#youGrid{grid-template-columns:1fr}
+  #peerSummary{max-width:58%}
+}
+@media (max-width:720px){
+  #app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  #rail{
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    border-right:none;
+    border-bottom:1px solid #172538;
+    padding:10px;
+  }
+  #brand{width:66px;height:46px;border-radius:14px}
+  #nav{flex-direction:row;gap:8px;justify-content:flex-end;flex:1}
+  .nav-btn{width:auto;min-width:56px;height:44px;padding:0 10px;border-radius:14px}
+  #main{grid-template-rows:88px 1fr}
+  #topbar{padding:12px}
+  #peerSummary{min-width:0;max-width:58%}
+  #composer{
+    grid-template-columns:1fr auto;
+    grid-template-areas:"input input" "left right";
+  }
+  #chatInput{grid-area:input}
+  #pickFileBtn{grid-area:left}
+  #sendBtn{grid-area:right}
+  .msg{max-width:88%}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="rail">
+    <div id="brand">MESH</div>
+    <div id="nav">
+      <button class="nav-btn active" data-view="link">LINK</button>
+      <button class="nav-btn" data-view="chat">CHAT</button>
+      <button class="nav-btn" data-view="files">FILES</button>
+      <button class="nav-btn" data-view="notes">NOTES</button>
+      <button class="nav-btn" data-view="you">YOU</button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header id="topbar">
+      <div id="title-wrap">
+        <div id="screenTitle">Link</div>
+        <div id="screenSub">Manual session setup</div>
+      </div>
+      <div id="peerSummary">
+        <div id="peerBadge">--</div>
+        <div id="peerSummaryMeta">
+          <div id="peerNameTop">No peer</div>
+          <div id="peerIdTop">ID --</div>
+          <div id="peerStateTop">Offline</div>
+        </div>
+      </div>
+    </header>
+
+    <section id="content">
+      <section class="screen active" id="linkScreen">
+        <div class="view">
+          <div class="grid2">
+            <div class="stack">
+              <div class="card">
+                <div class="cardTitle">Identity</div>
+                <div class="stack">
+                  <div>
+                    <div class="label">Nickname</div>
+                    <input class="input" id="nicknameInputA" maxlength="24" placeholder="Nickname" />
+                  </div>
+                  <div class="kv">
+                    <div class="k">ID</div>
+                    <div class="v mono" id="myIdA">--</div>
+                    <div class="k">Status</div>
+                    <div class="v"><span class="statusPill"><span class="dot" id="liveDot"></span><span id="liveText">Offline</span></span></div>
+                  </div>
+                  <div>
+                    <div class="label">Fingerprint</div>
+                    <div class="code mono" id="myFingerprintBox">--</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="cardTitle">Create</div>
+                <div class="row">
+                  <button class="btn primary" id="createInviteBtn">CREATE</button>
+                  <button class="btn small" id="copyInviteBtn">COPY</button>
+                  <button class="btn danger" id="disconnectBtn" disabled>DISCONNECT</button>
+                </div>
+                <div class="label" style="margin-top:14px">Invite</div>
+                <div class="code mono" id="inviteCodeBox"></div>
+                <div class="label" style="margin-top:14px">Reply</div>
+                <textarea class="textarea mono" id="replyInput" placeholder="Paste reply code"></textarea>
+                <div class="row">
+                  <button class="btn primary" id="finalizeBtn">CONNECT</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="stack">
+              <div class="card">
+                <div class="cardTitle">Join</div>
+                <div class="label">Invite</div>
+                <textarea class="textarea mono" id="inviteInput" placeholder="Paste invite code"></textarea>
+                <div class="row">
+                  <button class="btn good" id="acceptBtn">ACCEPT</button>
+                </div>
+                <div class="label" style="margin-top:14px">Reply</div>
+                <div class="code mono" id="answerCodeBox"></div>
+                <div class="row">
+                  <button class="btn small" id="copyAnswerBtn">COPY</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="cardTitle">Peer</div>
+                <div class="kv">
+                  <div class="k">Nickname</div>
+                  <div class="v" id="peerNickBox">--</div>
+                  <div class="k">ID</div>
+                  <div class="v mono" id="peerIdBox">--</div>
+                </div>
+                <div class="label" style="margin-top:14px">Fingerprint</div>
+                <div class="code mono" id="peerFingerprintBox">--</div>
+              </div>
+
+              <div class="card">
+                <div class="cardTitle">State</div>
+                <div class="note" id="stateNote">State restores in this tab. A live link must be reopened after leaving the page.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="chatScreen">
+        <div class="view">
+          <div id="chatLayout">
+            <div class="card" style="padding:12px;min-height:0;display:flex;flex-direction:column">
+              <div id="messagesWrap"></div>
+            </div>
+            <div class="card" style="padding:12px">
+              <div id="composer">
+                <textarea class="textarea" id="chatInput" rows="2" placeholder="Message" disabled></textarea>
+                <button class="btn" id="pickFileBtn" disabled>PICK FILE</button>
+                <button class="btn primary" id="sendBtn" disabled>SEND</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="filesScreen">
+        <div class="view">
+          <div class="card" style="height:100%;display:flex;flex-direction:column;min-height:0">
+            <div id="filesTop">
+              <div>
+                <div class="cardTitle" style="margin-bottom:4px">Files</div>
+                <div class="note">Direct transfer</div>
+              </div>
+              <div class="row">
+                <button class="btn primary" id="sendFileBtn" disabled>SEND FILE</button>
+              </div>
+            </div>
+            <div id="fileList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="notesScreen">
+        <div class="view">
+          <div class="card" style="height:100%;display:flex;flex-direction:column">
+            <div id="notesBar">
+              <div>
+                <div class="cardTitle" style="margin-bottom:4px">Notes</div>
+                <div class="note" id="notesStatus">Idle</div>
+              </div>
+              <div class="row">
+                <button class="btn small" id="clearNotesBtn">CLEAR</button>
+              </div>
+            </div>
+            <textarea class="textarea" id="notesArea" placeholder="Shared notes" disabled></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="youScreen">
+        <div class="view">
+          <div id="youGrid">
+            <div class="stack">
+              <div class="card">
+                <div class="cardTitle">Profile</div>
+                <div class="stack">
+                  <div>
+                    <div class="label">Nickname</div>
+                    <input class="input" id="nicknameInputB" maxlength="24" placeholder="Nickname" />
+                  </div>
+                  <div class="kv">
+                    <div class="k">ID</div>
+                    <div class="v mono" id="myIdB">--</div>
+                    <div class="k">Fingerprint</div>
+                    <div class="v mono" id="myFingerprintShort">--</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="cardTitle">State</div>
+                <div class="row">
+                  <button class="btn small" id="exportBtn">EXPORT</button>
+                  <button class="btn small" id="importBtn">IMPORT</button>
+                  <button class="btn danger small" id="clearHistoryBtn">CLEAR CHAT</button>
+                </div>
+                <div class="note" style="margin-top:12px">Identity, nickname, notes, and text history can be restored. A live link cannot survive a full page exit.</div>
+              </div>
+            </div>
+
+            <div class="stack">
+              <div class="card">
+                <div class="cardTitle">Peer</div>
+                <div class="kv">
+                  <div class="k">Nickname</div>
+                  <div class="v" id="peerNickBox2">--</div>
+                  <div class="k">ID</div>
+                  <div class="v mono" id="peerIdBox2">--</div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="cardTitle">History</div>
+                <div class="row">
+                  <span class="tag" id="historyCountTag">0 ITEMS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+</div>
+
+<input type="file" id="filePicker" class="hidden" />
+<input type="file" id="stateFilePicker" class="hidden" accept=".json,application/json" />
+
+<script>
+'use strict';
+
+const CHUNK = 12 * 1024;
+const MAX_FILE = 32 * 1024 * 1024;
+const SNAP_PREFIX = 'meshcore:';
+const te = new TextEncoder();
+const td = new TextDecoder();
+
+const state = {
+  view: 'link',
+  me: {
+    nickname: 'User',
+    id: '',
+    fp: '',
+    spkiB64: '',
+    pkcs8B64: '',
+    keyPair: null
+  },
+  peer: {
+    nickname: '',
+    id: '',
+    fp: '',
+    pubB64: ''
+  },
+  pc: null,
+  dc: null,
+  aesKey: null,
+  live: false,
+  role: '',
+  messages: [],
+  notes: '',
+  noteTimer: null,
+  saveTimer: null,
+  transfers: {
+    in: {},
+    out: {}
+  }
+};
+
+const $ = s => document.querySelector(s);
+const ui = {
+  navBtns: [...document.querySelectorAll('.nav-btn')],
+  screens: {
+    link: $('#linkScreen'),
+    chat: $('#chatScreen'),
+    files: $('#filesScreen'),
+    notes: $('#notesScreen'),
+    you: $('#youScreen')
+  },
+  screenTitle: $('#screenTitle'),
+  screenSub: $('#screenSub'),
+  peerBadge: $('#peerBadge'),
+  peerNameTop: $('#peerNameTop'),
+  peerIdTop: $('#peerIdTop'),
+  peerStateTop: $('#peerStateTop'),
+
+  nicknameInputA: $('#nicknameInputA'),
+  nicknameInputB: $('#nicknameInputB'),
+  myIdA: $('#myIdA'),
+  myIdB: $('#myIdB'),
+  myFingerprintBox: $('#myFingerprintBox'),
+  myFingerprintShort: $('#myFingerprintShort'),
+  liveDot: $('#liveDot'),
+  liveText: $('#liveText'),
+
+  createInviteBtn: $('#createInviteBtn'),
+  copyInviteBtn: $('#copyInviteBtn'),
+  disconnectBtn: $('#disconnectBtn'),
+  inviteCodeBox: $('#inviteCodeBox'),
+  replyInput: $('#replyInput'),
+  finalizeBtn: $('#finalizeBtn'),
+
+  inviteInput: $('#inviteInput'),
+  acceptBtn: $('#acceptBtn'),
+  answerCodeBox: $('#answerCodeBox'),
+  copyAnswerBtn: $('#copyAnswerBtn'),
+
+  peerNickBox: $('#peerNickBox'),
+  peerIdBox: $('#peerIdBox'),
+  peerFingerprintBox: $('#peerFingerprintBox'),
+  stateNote: $('#stateNote'),
+
+  messagesWrap: $('#messagesWrap'),
+  chatInput: $('#chatInput'),
+  pickFileBtn: $('#pickFileBtn'),
+  sendBtn: $('#sendBtn'),
+
+  fileList: $('#fileList'),
+  sendFileBtn: $('#sendFileBtn'),
+  filePicker: $('#filePicker'),
+
+  notesArea: $('#notesArea'),
+  notesStatus: $('#notesStatus'),
+  clearNotesBtn: $('#clearNotesBtn'),
+
+  peerNickBox2: $('#peerNickBox2'),
+  peerIdBox2: $('#peerIdBox2'),
+  exportBtn: $('#exportBtn'),
+  importBtn: $('#importBtn'),
+  stateFilePicker: $('#stateFilePicker'),
+  clearHistoryBtn: $('#clearHistoryBtn'),
+  historyCountTag: $('#historyCountTag')
+};
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s ?? ''; return d.innerHTML; }
+function stamp(){ return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function fmtBytes(n){ return n<1024 ? n+' B' : n<1048576 ? (n/1024).toFixed(1).replace(/\.0$/,'')+' KB' : (n/1048576).toFixed(1).replace(/\.0$/,'')+' MB'; }
+function extOf(name){ return ((name.split('.').pop() || 'FILE').slice(0,4).toUpperCase()) || 'FILE'; }
+function initials(s){ return (s || '--').trim().slice(0,2).toUpperCase() || '--'; }
+function ab2b64(buf){
+  const u = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+  let out = '';
+  const step = 0x8000;
+  for(let i=0;i<u.length;i+=step) out += String.fromCharCode(...u.subarray(i, i+step));
+  return btoa(out);
+}
+function b642ab(s){
+  const bin = atob(s);
+  const u = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i);
+  return u.buffer;
+}
+async function sha256Hex(ab){
+  const hash = await crypto.subtle.digest('SHA-256', ab);
+  return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join(':');
+}
+function shortId(fp){
+  return fp.replace(/:/g,'').slice(0,16).match(/.{1,4}/g).join('-');
+}
+function copyText(text){
+  navigator.clipboard.writeText(text).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+  });
+}
+function downloadBlob(name, text, type='application/json'){
+  const blob = new Blob([text], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
+function setView(view){
+  state.view = view;
+  ui.navBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+  Object.entries(ui.screens).forEach(([k,v]) => v.classList.toggle('active', k === view));
+  const map = {
+    link: ['Link','Manual session setup'],
+    chat: ['Chat', state.live ? 'Encrypted conversation' : 'No active link'],
+    files: ['Files', state.live ? 'Direct transfer' : 'No active link'],
+    notes: ['Notes', state.live ? 'Shared note pad' : 'No active link'],
+    you: ['You','Local identity and state']
+  };
+  ui.screenTitle.textContent = map[view][0];
+  ui.screenSub.textContent = map[view][1];
+  queueSave();
+}
+ui.navBtns.forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+
+function updateMeUI(){
+  ui.nicknameInputA.value = state.me.nickname;
+  ui.nicknameInputB.value = state.me.nickname;
+  ui.myIdA.textContent = state.me.id || '--';
+  ui.myIdB.textContent = state.me.id || '--';
+  ui.myFingerprintBox.textContent = state.me.fp || '--';
+  ui.myFingerprintShort.textContent = state.me.fp ? state.me.fp.slice(0, 47) + '…' : '--';
+}
+
+function updatePeerUI(){
+  const name = state.peer.nickname || 'No peer';
+  const id = state.peer.id || '--';
+  ui.peerBadge.textContent = state.live ? initials(name) : '--';
+  ui.peerNameTop.textContent = name;
+  ui.peerIdTop.textContent = 'ID ' + id;
+  ui.peerStateTop.textContent = state.live ? 'Connected' : 'Offline';
+
+  ui.peerNickBox.textContent = state.peer.nickname || '--';
+  ui.peerIdBox.textContent = state.peer.id || '--';
+  ui.peerFingerprintBox.textContent = state.peer.fp || '--';
+
+  ui.peerNickBox2.textContent = state.peer.nickname || '--';
+  ui.peerIdBox2.textContent = state.peer.id || '--';
+}
+
+function updateLiveUI(){
+  ui.liveDot.classList.toggle('on', state.live);
+  ui.liveText.textContent = state.live ? 'Connected' : 'Offline';
+  ui.disconnectBtn.disabled = !state.pc;
+  ui.chatInput.disabled = !state.live;
+  ui.sendBtn.disabled = !state.live;
+  ui.pickFileBtn.disabled = !state.live;
+  ui.sendFileBtn.disabled = !state.live;
+  ui.notesArea.disabled = !state.live;
+  ui.notesStatus.textContent = state.live ? 'Live' : 'Idle';
+  updatePeerUI();
+  setView(state.view);
+}
+
+function appendSystem(text){
+  state.messages.push({kind:'sys', text, time:stamp()});
+  trimMessages();
+  renderMessages();
+  queueSave();
+}
+function appendText(side, text, time=stamp()){
+  state.messages.push({kind:'text', side, text, time});
+  trimMessages();
+  renderMessages();
+  queueSave();
+}
+function trimMessages(){
+  if(state.messages.length > 160) state.messages = state.messages.slice(-160);
+}
+function renderMessages(){
+  ui.messagesWrap.innerHTML = '';
+  if(!state.messages.length){
+    const item = document.createElement('div');
+    item.className = 'msg sys';
+    item.innerHTML = '<div class="bubble">Ready</div>';
+    ui.messagesWrap.appendChild(item);
+  } else {
+    for(const m of state.messages){
+      const node = document.createElement('div');
+      if(m.kind === 'sys'){
+        node.className = 'msg sys';
+        node.innerHTML = `<div class="bubble">${esc(m.text)}</div>`;
+      } else {
+        node.className = 'msg ' + (m.side === 'me' ? 'me' : 'peer');
+        node.innerHTML = `<div class="bubble">${esc(m.text)}</div><div class="msgMeta">${esc(m.time)}</div>`;
+      }
+      ui.messagesWrap.appendChild(node);
+    }
+  }
+  ui.messagesWrap.scrollTop = ui.messagesWrap.scrollHeight;
+  ui.historyCountTag.textContent = `${state.messages.filter(m=>m.kind==='text'||m.kind==='sys').length} ITEMS`;
+}
+
+function makeFileItem(name, size, statusText, side='peer'){
+  const item = document.createElement('div');
+  item.className = 'fileItem';
+  item.innerHTML = `
+    <div class="fileExt">${esc(extOf(name))}</div>
+    <div>
+      <div class="fileName">${esc(name)}</div>
+      <div class="fileSub">${esc(statusText)} · ${esc(fmtBytes(size))}</div>
+      <div class="progress"><div></div></div>
+    </div>
+    <div class="row" style="justify-content:flex-end"></div>
+  `;
+  if(side === 'me'){
+    item.style.borderColor = '#5977a4';
+  }
+  ui.fileList.prepend(item);
+  return item;
+}
+
+function clearPeer(keepDisplayed = false){
+  state.peer.pubB64 = '';
+  if(!keepDisplayed){
+    state.peer.nickname = '';
+    state.peer.id = '';
+    state.peer.fp = '';
+  }
+}
+
+function closeLink(clearPeerToo = false){
+  state.live = false;
+  state.role = '';
+  state.aesKey = null;
+  state.transfers.in = {};
+  state.transfers.out = {};
+  if(state.dc){ try{ state.dc.close(); }catch(e){} }
+  if(state.pc){ try{ state.pc.close(); }catch(e){} }
+  state.dc = null;
+  state.pc = null;
+  if(clearPeerToo) clearPeer(false);
+  ui.inviteCodeBox.textContent = '';
+  ui.answerCodeBox.textContent = '';
+  updateLiveUI();
+  queueSave();
+}
+
+async function generateIdentity(){
+  const keyPair = await crypto.subtle.generateKey(
+    {name:'ECDH', namedCurve:'P-256'},
+    true,
+    ['deriveKey']
+  );
+  const spki = await crypto.subtle.exportKey('spki', keyPair.publicKey);
+  const pkcs8 = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+  state.me.keyPair = keyPair;
+  state.me.spkiB64 = ab2b64(spki);
+  state.me.pkcs8B64 = ab2b64(pkcs8);
+  state.me.fp = await sha256Hex(spki);
+  state.me.id = shortId(state.me.fp);
+  if(!state.me.nickname || state.me.nickname === 'User'){
+    state.me.nickname = 'User ' + state.me.id.slice(-4);
+  }
+}
+
+async function restoreIdentityFromSnapshot(snap){
+  const privateKey = await crypto.subtle.importKey(
+    'pkcs8',
+    b642ab(snap.me.pkcs8B64),
+    {name:'ECDH', namedCurve:'P-256'},
+    true,
+    ['deriveKey']
+  );
+  const publicKey = await crypto.subtle.importKey(
+    'spki',
+    b642ab(snap.me.spkiB64),
+    {name:'ECDH', namedCurve:'P-256'},
+    true,
+    []
+  );
+  state.me.keyPair = { publicKey, privateKey };
+  state.me.spkiB64 = snap.me.spkiB64;
+  state.me.pkcs8B64 = snap.me.pkcs8B64;
+  state.me.fp = await sha256Hex(b642ab(state.me.spkiB64));
+  state.me.id = shortId(state.me.fp);
+}
+
+function buildSnapshot(){
+  return {
+    version: 2,
+    view: state.view,
+    me: {
+      nickname: state.me.nickname,
+      spkiB64: state.me.spkiB64,
+      pkcs8B64: state.me.pkcs8B64
+    },
+    peer: {
+      nickname: state.peer.nickname,
+      id: state.peer.id,
+      fp: state.peer.fp
+    },
+    notes: state.notes,
+    messages: state.messages.filter(m => m.kind === 'text' || m.kind === 'sys').slice(-120)
+  };
+}
+function queueSave(){
+  clearTimeout(state.saveTimer);
+  state.saveTimer = setTimeout(saveSnapshot, 250);
+}
+function saveSnapshot(){
+  try{
+    const raw = JSON.stringify(buildSnapshot());
+    window.name = SNAP_PREFIX + btoa(unescape(encodeURIComponent(raw)));
+  }catch(e){}
+}
+function readSnapshot(){
+  try{
+    if(!window.name || !window.name.startsWith(SNAP_PREFIX)) return null;
+    return JSON.parse(decodeURIComponent(escape(atob(window.name.slice(SNAP_PREFIX.length)))));
+  }catch(e){
+    return null;
+  }
+}
+async function loadSnapshot(snap){
+  closeLink(false);
+  state.messages = Array.isArray(snap.messages) ? snap.messages.slice(-120) : [];
+  state.notes = typeof snap.notes === 'string' ? snap.notes : '';
+  state.peer.nickname = snap.peer?.nickname || '';
+  state.peer.id = snap.peer?.id || '';
+  state.peer.fp = snap.peer?.fp || '';
+  state.view = ['link','chat','files','notes','you'].includes(snap.view) ? snap.view : 'link';
+  if(snap.me?.pkcs8B64 && snap.me?.spkiB64){
+    try{
+      await restoreIdentityFromSnapshot(snap);
+    }catch(e){
+      await generateIdentity();
+    }
+  } else {
+    await generateIdentity();
+  }
+  state.me.nickname = snap.me?.nickname || state.me.nickname || 'User';
+  updateMeUI();
+  updatePeerUI();
+  updateLiveUI();
+  renderMessages();
+  ui.notesArea.value = state.notes;
+  setView(state.view);
+  queueSave();
+}
+
+async function deriveSessionKey(remotePubB64){
+  const remotePublicKey = await crypto.subtle.importKey(
+    'spki',
+    b642ab(remotePubB64),
+    {name:'ECDH', namedCurve:'P-256'},
+    false,
+    []
+  );
+  state.aesKey = await crypto.subtle.deriveKey(
+    {name:'ECDH', public: remotePublicKey},
+    state.me.keyPair.privateKey,
+    {name:'AES-GCM', length:256},
+    false,
+    ['encrypt','decrypt']
+  );
+}
+
+async function encryptPayload(obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const pt = te.encode(JSON.stringify(obj));
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, state.aesKey, pt);
+  return { t:'e', iv:ab2b64(iv), d:ab2b64(ct) };
+}
+
+async function decryptPayload(frame){
+  const pt = await crypto.subtle.decrypt(
+    {name:'AES-GCM', iv:b642ab(frame.iv)},
+    state.aesKey,
+    b642ab(frame.d)
+  );
+  return JSON.parse(td.decode(pt));
+}
+
+function makeSignal(desc){
+  return btoa(JSON.stringify({
+    sdp: desc,
+    pubB64: state.me.spkiB64,
+    nickname: state.me.nickname,
+    id: state.me.id,
+    fp: state.me.fp
+  }));
+}
+function parseSignal(raw){
+  return JSON.parse(atob(raw.trim()));
+}
+
+function makePC(){
+  if(state.pc){ try{ state.pc.close(); }catch(e){} }
+  state.pc = new RTCPeerConnection({});
+  state.pc.onconnectionstatechange = () => {
+    const cs = state.pc?.connectionState || '';
+    if((cs === 'failed' || cs === 'disconnected' || cs === 'closed') && state.live){
+      appendSystem('Link closed');
+      closeLink(false);
+    }
+    updateLiveUI();
+  };
+  return state.pc;
+}
+function waitIce(pc){
+  return new Promise(resolve => {
+    if(pc.iceGatheringState === 'complete') return resolve();
+    const done = () => {
+      if(pc.iceGatheringState === 'complete'){
+        pc.removeEventListener('icegatheringstatechange', done);
+        resolve();
+      }
+    };
+    pc.addEventListener('icegatheringstatechange', done);
+    setTimeout(resolve, 5000);
+  });
+}
+function wireDC(dc){
+  state.dc = dc;
+  dc.onopen = () => {
+    state.live = true;
+    updateLiveUI();
+    appendSystem('Link active');
+    setView('chat');
+    sendPayload({type:'meta', nickname: state.me.nickname});
+    if(state.notes) sendPayload({type:'note', text: state.notes});
+    queueSave();
+  };
+  dc.onclose = () => {
+    if(state.live){
+      appendSystem('Link closed');
+      closeLink(false);
+    }
+  };
+  dc.onerror = () => {};
+  dc.onmessage = async e => {
+    try{
+      const frame = JSON.parse(e.data);
+      if(frame.t !== 'e') return;
+      const payload = await decryptPayload(frame);
+      handleIncoming(payload);
+    }catch(err){}
+  };
+}
+function applyPeerSignal(sig){
+  state.peer.nickname = sig.nickname || 'Peer';
+  state.peer.id = sig.id || '--';
+  state.peer.fp = sig.fp || '--';
+  state.peer.pubB64 = sig.pubB64 || '';
+  updatePeerUI();
+  queueSave();
+}
+
+async function sendPayload(payload){
+  if(!state.live || !state.dc || state.dc.readyState !== 'open' || !state.aesKey) return;
+  const frame = await encryptPayload(payload);
+  state.dc.send(JSON.stringify(frame));
+}
+async function throttleBuffer(){
+  while(state.dc && state.dc.bufferedAmount > 500000){
+    await sleep(35);
+  }
+}
+
+async function createInvite(){
+  closeLink(true);
+  ui.inviteCodeBox.textContent = 'Building';
+  ui.createInviteBtn.disabled = true;
+  try{
+    state.role = 'offerer';
+    const pc = makePC();
+    const dc = pc.createDataChannel('meshcore');
+    wireDC(dc);
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await waitIce(pc);
+    ui.inviteCodeBox.textContent = makeSignal(pc.localDescription);
+  }catch(e){
+    ui.inviteCodeBox.textContent = 'Failed';
+  }finally{
+    ui.createInviteBtn.disabled = false;
+    queueSave();
+  }
+}
+
+async function acceptInvite(){
+  const raw = ui.inviteInput.value.trim();
+  if(!raw) return;
+  ui.acceptBtn.disabled = true;
+  try{
+    closeLink(true);
+    state.role = 'answerer';
+    const sig = parseSignal(raw);
+    applyPeerSignal(sig);
+    await deriveSessionKey(sig.pubB64);
+
+    const pc = makePC();
+    pc.ondatachannel = ev => wireDC(ev.channel);
+    await pc.setRemoteDescription(sig.sdp);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await waitIce(pc);
+    ui.answerCodeBox.textContent = makeSignal(pc.localDescription);
+  }catch(e){
+    appendSystem('Invalid invite');
+    closeLink(true);
+  }finally{
+    ui.acceptBtn.disabled = false;
+    queueSave();
+  }
+}
+
+async function finalizeInvite(){
+  const raw = ui.replyInput.value.trim();
+  if(!raw || !state.pc) return;
+  ui.finalizeBtn.disabled = true;
+  try{
+    const sig = parseSignal(raw);
+    applyPeerSignal(sig);
+    await deriveSessionKey(sig.pubB64);
+    await state.pc.setRemoteDescription(sig.sdp);
+  }catch(e){
+    appendSystem('Invalid reply');
+  }finally{
+    ui.finalizeBtn.disabled = false;
+    queueSave();
+  }
+}
+
+function sendChat(){
+  const text = ui.chatInput.value.trim();
+  if(!text || !state.live) return;
+  ui.chatInput.value = '';
+  ui.chatInput.style.height = '56px';
+  appendText('me', text);
+  sendPayload({type:'chat', text, time:stamp()});
+}
+
+function handleIncoming(payload){
+  switch(payload.type){
+    case 'meta':
+      state.peer.nickname = payload.nickname || state.peer.nickname || 'Peer';
+      updatePeerUI();
+      queueSave();
+      break;
+    case 'chat':
+      appendText('peer', payload.text || '', payload.time || stamp());
+      break;
+    case 'note':
+      state.notes = payload.text || '';
+      ui.notesArea.value = state.notes;
+      ui.notesStatus.textContent = 'Updated ' + stamp();
+      queueSave();
+      break;
+    case 'file-start':
+      prepareInbound(payload);
+      break;
+    case 'file-chunk':
+      receiveChunk(payload);
+      break;
+  }
+}
+
+async function sendFile(file){
+  if(!state.live || !file) return;
+  if(file.size > MAX_FILE){
+    appendSystem('File too large');
+    return;
+  }
+  const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+  const total = Math.max(1, Math.ceil(file.size / CHUNK));
+  const item = makeFileItem(file.name, file.size, 'Sending', 'me');
+  const sub = item.querySelector('.fileSub');
+  const fill = item.querySelector('.progress > div');
+
+  state.transfers.out[id] = { item, total };
+
+  await sendPayload({
+    type:'file-start',
+    id,
+    name:file.name,
+    size:file.size,
+    mime:file.type || 'application/octet-stream',
+    total
+  });
+
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  for(let i=0;i<total;i++){
+    const chunk = bytes.slice(i * CHUNK, (i + 1) * CHUNK);
+    await sendPayload({
+      type:'file-chunk',
+      id,
+      index:i,
+      data:ab2b64(chunk)
+    });
+    fill.style.width = (((i + 1) / total) * 100) + '%';
+    sub.textContent = `Sending ${i + 1}/${total} · ${fmtBytes(file.size)}`;
+    if(i % 6 === 0) await throttleBuffer();
+  }
+  const action = item.querySelector('.row');
+  const done = document.createElement('span');
+  done.className = 'tag';
+  done.textContent = 'DONE';
+  action.appendChild(done);
+  sub.textContent = `Sent · ${fmtBytes(file.size)}`;
+}
+
+function prepareInbound(meta){
+  const item = makeFileItem(meta.name, meta.size, 'Receiving', 'peer');
+  state.transfers.in[meta.id] = {
+    meta,
+    item,
+    chunks:new Array(meta.total),
+    got:0
+  };
+}
+function receiveChunk(payload){
+  const ref = state.transfers.in[payload.id];
+  if(!ref || ref.chunks[payload.index]) return;
+  ref.chunks[payload.index] = payload.data;
+  ref.got += 1;
+
+  const fill = ref.item.querySelector('.progress > div');
+  const sub = ref.item.querySelector('.fileSub');
+  fill.style.width = ((ref.got / ref.meta.total) * 100) + '%';
+  sub.textContent = `Receiving ${ref.got}/${ref.meta.total} · ${fmtBytes(ref.meta.size)}`;
+
+  if(ref.got === ref.meta.total){
+    const parts = ref.chunks.map(c => b642ab(c));
+    const blob = new Blob(parts, {type: ref.meta.mime || 'application/octet-stream'});
+    const url = URL.createObjectURL(blob);
+    const action = ref.item.querySelector('.row');
+    action.innerHTML = `<a class="btn small" style="text-decoration:none" href="${url}" download="${esc(ref.meta.name)}">SAVE</a>`;
+    sub.textContent = `Received · ${fmtBytes(ref.meta.size)}`;
+    const p = ref.item.querySelector('.progress');
+    if(p) p.remove();
+  }
+}
+
+function syncNick(value){
+  state.me.nickname = (value.trim() || 'User').slice(0, 24);
+  ui.nicknameInputA.value = state.me.nickname;
+  ui.nicknameInputB.value = state.me.nickname;
+  updateMeUI();
+  if(state.live) sendPayload({type:'meta', nickname: state.me.nickname});
+  queueSave();
+}
+
+function queueNoteSync(){
+  if(!state.live) return;
+  clearTimeout(state.noteTimer);
+  state.notes = ui.notesArea.value;
+  ui.notesStatus.textContent = 'Syncing';
+  state.noteTimer = setTimeout(async () => {
+    await sendPayload({type:'note', text: state.notes});
+    ui.notesStatus.textContent = 'Synced ' + stamp();
+    queueSave();
+  }, 240);
+}
+
+ui.nicknameInputA.addEventListener('input', e => syncNick(e.target.value));
+ui.nicknameInputB.addEventListener('input', e => syncNick(e.target.value));
+
+ui.createInviteBtn.addEventListener('click', createInvite);
+ui.copyInviteBtn.addEventListener('click', () => {
+  const t = ui.inviteCodeBox.textContent.trim();
+  if(t) copyText(t);
+});
+ui.disconnectBtn.addEventListener('click', () => closeLink(true));
+ui.finalizeBtn.addEventListener('click', finalizeInvite);
+
+ui.acceptBtn.addEventListener('click', acceptInvite);
+ui.copyAnswerBtn.addEventListener('click', () => {
+  const t = ui.answerCodeBox.textContent.trim();
+  if(t) copyText(t);
+});
+
+ui.sendBtn.addEventListener('click', sendChat);
+ui.chatInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendChat();
+  }
+});
+ui.chatInput.addEventListener('input', () => {
+  ui.chatInput.style.height = '56px';
+  ui.chatInput.style.height = Math.min(150, ui.chatInput.scrollHeight) + 'px';
+});
+
+ui.pickFileBtn.addEventListener('click', () => ui.filePicker.click());
+ui.sendFileBtn.addEventListener('click', () => ui.filePicker.click());
+ui.filePicker.addEventListener('change', async () => {
+  const file = ui.filePicker.files[0];
+  ui.filePicker.value = '';
+  if(file) await sendFile(file);
+});
+
+ui.notesArea.addEventListener('input', queueNoteSync);
+ui.clearNotesBtn.addEventListener('click', () => {
+  ui.notesArea.value = '';
+  state.notes = '';
+  if(state.live){
+    queueNoteSync();
+  } else {
+    ui.notesStatus.textContent = 'Idle';
+    queueSave();
+  }
+});
+
+ui.exportBtn.addEventListener('click', () => {
+  downloadBlob('meshcore-state.json', JSON.stringify(buildSnapshot(), null, 2));
+});
+ui.importBtn.addEventListener('click', () => ui.stateFilePicker.click());
+ui.stateFilePicker.addEventListener('change', async () => {
+  const f = ui.stateFilePicker.files[0];
+  ui.stateFilePicker.value = '';
+  if(!f) return;
+  try{
+    const text = await f.text();
+    const snap = JSON.parse(text);
+    await loadSnapshot(snap);
+  }catch(e){}
+});
+ui.clearHistoryBtn.addEventListener('click', () => {
+  state.messages = [];
+  renderMessages();
+  queueSave();
+});
+
+window.addEventListener('beforeunload', saveSnapshot);
+
+(async function boot(){
+  if(!window.crypto?.subtle || !window.RTCPeerConnection){
+    document.body.innerHTML = '<div style="margin:auto;padding:24px;color:#e8eef7;font-family:Inter,system-ui">Browser support is required.</div>';
+    return;
+  }
+
+  const snap = readSnapshot();
+  if(snap){
+    await loadSnapshot(snap);
+  } else {
+    await generateIdentity();
+    updateMeUI();
+    updatePeerUI();
+    updateLiveUI();
+    renderMessages();
+    ui.notesArea.value = '';
+    setView('link');
+    queueSave();
+  }
+})();
+</script>
+</body>
+</html>
