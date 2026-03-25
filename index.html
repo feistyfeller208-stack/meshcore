@@ -43,6 +43,7 @@
   .badge { background: var(--panel-light); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent); }
   
   #bottomNav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
+  #view-chat.active ~ #bottomNav { display: none; }
   .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; transition: 0.2s; gap: 6px; min-height: 70px; }
   .nav-item svg { width: 28px; height: 28px; fill: currentColor; }
   .nav-item span { font-size: 12px; font-weight: 700; }
@@ -50,16 +51,16 @@
   .nav-item:active { background: rgba(255,255,255,0.05); }
   
   #view-chat { padding: 0; }
-  .chat-header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .chat-header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; flex-shrink: 0; }
   .chat-header h3 { font-size: 18px; }
   .chat-header p { font-size: 13px; }
-  .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; margin-bottom: var(--nav-h); }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
   .msg { max-width: 80%; padding: 14px 18px; border-radius: 18px; font-size: 16px; line-height: 1.5; word-break: break-word; }
   .msg.me { align-self: flex-end; background: var(--accent); color: #000; border-bottom-right-radius: 6px; }
   .msg.peer { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
   .msg.sys { align-self: center; background: transparent; color: var(--muted); font-size: 14px; max-width: 90%; text-align: center; }
   .msg-time { font-size: 11px; opacity: 0.7; margin-top: 6px; text-align: right; }
-  .chat-composer { display: flex; gap: 12px; padding: 16px; background: var(--bg2); border-top: 1px solid var(--border); position: fixed; bottom: var(--nav-h); left: 0; right: 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .chat-composer { display: flex; gap: 12px; padding: 16px; background: var(--bg2); border-top: 1px solid var(--border); position: fixed; bottom: var(--nav-h); left: 0; right: 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 20; flex-shrink: 0; }
   .chat-composer input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 24px; padding: 14px 20px; outline: none; font-size: 16px; }
   .chat-composer button { background: var(--accent); color: #000; border: none; border-radius: 50%; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
   .chat-composer button svg { width: 24px; height: 24px; }
@@ -70,6 +71,25 @@
   .contact-info p { font-size: 14px; color: var(--muted); }
   .status-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
   .status-dot.live { background: var(--green); box-shadow: 0 0 10px var(--green); }
+  
+  /* Contact Info Sheet */
+  .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: none; }
+  .sheet-overlay.active { display: block; }
+  .contact-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-top: 1px solid var(--border); border-radius: 24px 24px 0 0; max-height: 80vh; overflow-y: auto; z-index: 201; display: flex; flex-direction: column; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform 0.3s ease; }
+  .contact-sheet.active { transform: translateY(0); }
+  .sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .sheet-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .sheet-avatar { width: 60px; height: 60px; border-radius: 14px; background: var(--panel); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+  .sheet-name { flex: 1; }
+  .sheet-name h2 { font-size: 20px; margin-bottom: 4px; }
+  .sheet-name p { font-size: 13px; color: var(--muted); }
+  .sheet-status { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .sheet-divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .sheet-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .sheet-row-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .sheet-row-value { font-family: monospace; font-size: 14px; color: var(--accent); word-break: break-all; }
+  .sheet-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .sheet-actions .btn { width: 100%; }
   
   .broadcast-item { background: var(--panel); padding: 18px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; }
   .bc-header { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); margin-bottom: 10px; }
@@ -100,7 +120,7 @@
   .voice-duration { font-size: 12px; opacity: 0.7; flex-shrink: 0; }
 
   /* Recording bar */
-  .recording-bar { display: none; gap: 12px; padding: 16px 20px; background: var(--bg2); border-top: 1px solid var(--border); position: fixed; bottom: var(--nav-h); left: 0; right: 0; align-items: center; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .recording-bar { display: none; gap: 12px; padding: 16px 20px; background: var(--bg2); border-top: 1px solid var(--border); position: fixed; bottom: var(--nav-h); left: 0; right: 0; align-items: center; padding-bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 20; }
   .recording-bar.active { display: flex; }
   .rec-dot { width: 12px; height: 12px; background: var(--red); border-radius: 50%; animation: recPulse 1s ease-in-out infinite; flex-shrink: 0; }
   @keyframes recPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -357,6 +377,35 @@
   </nav>
 </div>
 
+<!-- CONTACT INFO SHEET -->
+<div class="sheet-overlay" id="contactSheetOverlay" onclick="closeContactSheet()"></div>
+<div class="contact-sheet" id="contactSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-avatar" id="sheetAvatar">M</div>
+    <div class="sheet-name">
+      <h2 id="sheetName">Contact</h2>
+      <div class="sheet-status">
+        <div class="status-dot" id="sheetStatusDot"></div>
+        <span id="sheetStatusText">Offline</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="sheet-row">
+    <div class="sheet-row-label">Mesh ID</div>
+    <div class="sheet-row-value" id="sheetMeshId">-</div>
+  </div>
+  
+  <div class="sheet-divider"></div>
+  
+  <div class="sheet-actions">
+    <button class="btn btn-primary" onclick="openChatFromSheet()">Open Chat</button>
+    <button class="btn btn-primary" onclick="reconnectContact()">Reconnect</button>
+    <button class="btn btn-danger" onclick="confirmDeleteContact()">Delete Contact</button>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -437,7 +486,8 @@ const net = {
   mediaRecorder: null,
   recordingChunks: [],
   recordingSeconds: 0,
-  recordingTimer: null
+  recordingTimer: null,
+  sheetContactId: null
 };
 
 // ============ PERSISTENCE (localStorage + window.name fallback) ============
@@ -749,7 +799,100 @@ async function acceptInvite() {
     $('waitingMsg').style.color = 'var(--green)';
     $('inviteInput').value = '';
   } catch(e) { showToast('Invalid invite code','error'); }
-  $('btnAcceptInvite').disabled = false;
+  $('btnAcceptInvite').
+disabled = false;
+}
+
+// ============ ONE-TAP RECONNECT ============
+async function reconnectContact() {
+  const peerId = net.sheetContactId;
+  if(!peerId || !state.contacts[peerId]) return;
+  
+  closeContactSheet();
+  showToast('Creating reconnect offer...','success');
+  
+  const pc = makePC(peerId);
+  const dc = pc.createDataChannel('mc');
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await waitIce(pc);
+  
+  const offerCode = makeSignal(pc.localDescription);
+  navigator.clipboard.writeText(offerCode)
+    .then(() => {
+      showToast('Reconnect code copied! Send to peer.','success');
+      // Store pending reconnect
+      net.conns[peerId] = { pc, dc, aesKey: net.conns[peerId]?.aesKey || null, live: false, reconnecting: true };
+      
+      // Auto-finalize if peer sends answer (for instant reconnect)
+      const checkAnswer = setInterval(() => {
+        if(net.conns[peerId]?.live) {
+          clearInterval(checkAnswer);
+          showToast('Reconnected!','success');
+        }
+      }, 500);
+      setTimeout(() => clearInterval(checkAnswer), 30000);
+    })
+    .catch(() => showToast('Copy failed','error'));
+}
+
+// ============ CONTACT SHEET ============
+function openContactSheet(peerId) {
+  if(!state.contacts[peerId]) return;
+  const c = state.contacts[peerId];
+  const isLive = net.conns[peerId]?.live;
+  
+  net.sheetContactId = peerId;
+  $('sheetAvatar').textContent = c.nickname.charAt(0).toUpperCase();
+  $('sheetName').textContent = c.nickname;
+  $('sheetStatusText').textContent = isLive ? 'Online' : 'Offline';
+  $('sheetStatusDot').className = 'status-dot' + (isLive ? ' live' : '');
+  $('sheetMeshId').textContent = c.id;
+  
+  $('contactSheetOverlay').classList.add('active');
+  $('contactSheet').classList.add('active');
+}
+
+function closeContactSheet() {
+  $('contactSheetOverlay').classList.remove('active');
+  $('contactSheet').classList.remove('active');
+  net.sheetContactId = null;
+}
+
+function openChatFromSheet() {
+  const peerId = net.sheetContactId;
+  if(peerId) {
+    closeContactSheet();
+    openChat(peerId);
+  }
+}
+
+function confirmDeleteContact() {
+  const peerId = net.sheetContactId;
+  if(!peerId) return;
+  const name = state.contacts[peerId]?.nickname || peerId;
+  if(confirm(`Delete contact "${name}"? This cannot be undone.`)) {
+    deleteContact(peerId);
+  }
+}
+
+function deleteContact(peerId) {
+  // Disconnect if connected
+  if(net.conns[peerId]) {
+    if(net.conns[peerId].dc) net.conns[peerId].dc.close();
+    if(net.conns[peerId].pc) net.conns[peerId].pc.close();
+    delete net.conns[peerId];
+  }
+  
+  // Remove from state
+  delete state.contacts[peerId];
+  delete state.chats[peerId];
+  queueSave();
+  
+  closeContactSheet();
+  if(state.activeChat === peerId) closeActiveChat();
+  renderContacts();
+  showToast('Contact deleted','success');
 }
 
 // ============ DATA CHANNEL MESSAGING ============
@@ -1149,7 +1292,7 @@ function renderContacts() {
       const unread = c.unread || 0;
       const el = document.createElement('div');
       el.className = 'contact-item';
-      el.onclick = () => openChat(id);
+      el.onclick = () => openContactSheet(id);
       el.innerHTML = `
         <div class="contact-info">
           <h3>${esc(c.nickname)}</h3>
