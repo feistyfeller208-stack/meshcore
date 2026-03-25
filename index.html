@@ -17,7 +17,6 @@
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
   body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; flex-direction: column; font-size: 16px; }
   
-  /* Utilities */
   .hidden { display: none !important; }
   .btn { border: none; padding: 16px 24px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; color: #fff; background: var(--panel-light); display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; min-height: 52px; }
   .btn:active { transform: scale(0.96); }
@@ -29,24 +28,20 @@
   .textarea { resize: vertical; min-height: 120px; }
   .code-box { background: var(--bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border); font-family: monospace; font-size: 13px; word-break: break-all; max-height: 160px; overflow-y: auto; color: var(--green); line-height: 1.5; }
   
-  /* Splash & Overlay */
   #splash, #lockScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
   .spider-web { width: 140px; height: 140px; animation: pulse 2s infinite ease-in-out; }
   @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
   .title-splash { font-size: 28px; font-weight: 800; margin-top: 24px; letter-spacing: 3px; }
   
-  /* Layout */
   #app { flex: 1; display: flex; flex-direction: column; min-height: 0; }
   main { flex: 1; min-height: 0; position: relative; }
   .view { position: absolute; inset: 0; display: none; flex-direction: column; background: var(--bg); overflow-y: auto; padding: 20px; padding-bottom: calc(20px + var(--nav-h)); }
   .view.active { display: flex; }
   
-  /* Top Header */
   .header { padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
   .header h1 { font-size: 26px; font-weight: 800; }
   .badge { background: var(--panel-light); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent); }
   
-  /* Bottom Nav */
   #bottomNav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
   .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; transition: 0.2s; gap: 6px; min-height: 70px; }
   .nav-item svg { width: 28px; height: 28px; fill: currentColor; }
@@ -54,7 +49,6 @@
   .nav-item.active { color: var(--accent); }
   .nav-item:active { background: rgba(255,255,255,0.05); }
   
-  /* Chat View specific */
   #view-chat { padding: 0; }
   .chat-header { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
   .chat-header h3 { font-size: 18px; }
@@ -67,28 +61,24 @@
   .msg-time { font-size: 11px; opacity: 0.7; margin-top: 6px; text-align: right; }
   .chat-composer { display: flex; gap: 12px; padding: 16px; background: var(--bg2); border-top: 1px solid var(--border); position: fixed; bottom: var(--nav-h); left: 0; right: 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
   .chat-composer input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 24px; padding: 14px 20px; outline: none; font-size: 16px; }
-  .chat-composer button { background: var(--accent); color: #000; border: none; border-radius: 50%; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .chat-composer button { background: var(--accent); color: #000; border: none; border-radius: 50%; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
   .chat-composer button svg { width: 24px; height: 24px; }
   
-  /* Contacts List */
   .contact-item { display: flex; align-items: center; justify-content: space-between; padding: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; cursor: pointer; min-height: 70px; }
   .contact-item:active { background: var(--panel-light); }
   .contact-info h3 { font-size: 18px; margin-bottom: 6px; }
   .contact-info p { font-size: 14px; color: var(--muted); }
-  .status-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); }
+  .status-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
   .status-dot.live { background: var(--green); box-shadow: 0 0 10px var(--green); }
   
-  /* Broadcasts */
   .broadcast-item { background: var(--panel); padding: 18px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; }
   .bc-header { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); margin-bottom: 10px; }
   .bc-name { font-weight: 700; color: var(--accent); }
   
-  /* Settings & Link cards */
   .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; }
   .card h2 { font-size: 20px; margin-bottom: 4px; }
   .label { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* PIN Lock */
   .pin-dots { display: flex; gap: 14px; margin: 24px 0; }
   .pin-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); }
   .pin-dot.filled { background: var(--accent); }
@@ -96,13 +86,62 @@
   .num-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .num-btn:active { background: var(--panel-light); }
   
-  /* Empty states */
   .empty-state { color: var(--muted); text-align: center; margin-top: 50px; font-size: 16px; line-height: 1.6; }
+
+  /* Voice message styles */
+  .voice-msg { display: flex; align-items: center; gap: 12px; min-width: 180px; }
+  .voice-play-btn { width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .msg.me .voice-play-btn { background: rgba(0,0,0,0.25); color: #000; }
+  .msg.peer .voice-play-btn { background: var(--accent); color: #000; }
+  .voice-waveform { flex: 1; display: flex; align-items: center; gap: 2px; height: 30px; }
+  .voice-bar { width: 3px; border-radius: 2px; }
+  .msg.me .voice-bar { background: rgba(0,0,0,0.4); }
+  .msg.peer .voice-bar { background: var(--accent); opacity: 0.5; }
+  .voice-duration { font-size: 12px; opacity: 0.7; flex-shrink: 0; }
+
+  /* Recording bar */
+  .recording-bar { display: none; gap: 12px; padding: 16px 20px; background: var(--bg2); border-top: 1px solid var(--border); position: fixed; bottom: var(--nav-h); left: 0; right: 0; align-items: center; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .recording-bar.active { display: flex; }
+  .rec-dot { width: 12px; height: 12px; background: var(--red); border-radius: 50%; animation: recPulse 1s ease-in-out infinite; flex-shrink: 0; }
+  @keyframes recPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .rec-timer { flex: 1; font-size: 16px; font-weight: 700; color: var(--red); }
+  .rec-cancel { padding: 10px 18px; background: transparent; border: 1px solid var(--muted); color: var(--muted); border-radius: 10px; font-size: 14px; cursor: pointer; }
+  .rec-send { padding: 10px 22px; background: var(--accent); border: none; color: #000; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+  /* File message */
+  .file-msg { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .file-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; font-weight: 700; }
+  .msg.me .file-icon { background: rgba(0,0,0,0.2); color: #000; }
+  .msg.peer .file-icon { background: var(--panel-light); color: var(--accent); }
+  .file-details { flex: 1; min-width: 0; }
+  .file-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-size { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+  .file-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .file-progress-bar { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .msg.me .file-progress-bar { background: rgba(0,0,0,0.4); }
+  .msg.peer .file-progress-bar { background: var(--accent); }
+
+  /* Contact unread badge */
+  .contact-right { display: flex; align-items: center; gap: 12px; }
+  .unread-badge { min-width: 22px; height: 22px; background: var(--accent); border-radius: 11px; font-size: 12px; font-weight: 700; color: #000; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+
+  /* Notification toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+  .toggle { width: 48px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: var(--accent); }
+  .toggle-knob { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; }
+  .toggle.on .toggle-knob { transform: translateX(20px); }
+
+  /* Toast */
+  .toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast { padding: 12px 24px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; color: var(--text); box-shadow: var(--shadow); animation: toastIn 0.3s ease; white-space: nowrap; }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+  @keyframes toastIn { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
 </style>
 </head>
 <body>
 
-<!-- SVG Spider Web Logo -->
 <svg id="logo-svg" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <rect width="100" height="100" fill="#09111a" rx="20"/>
   <path d="M50 10 L50 90 M10 50 L90 50 M21.7 21.7 L78.3 78.3 M21.7 78.3 L78.3 21.7" stroke="#6b95f5" stroke-width="2" opacity="0.5"/>
@@ -160,17 +199,30 @@
             <p id="chatPeerId" style="color:var(--muted);"></p>
           </div>
         </div>
-        <button class="btn" style="padding:10px 16px;font-size:14px;" onclick="closeActiveChat()">Close</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" style="padding:10px 16px;font-size:14px;" onclick="document.getElementById('fileInput').click()">File</button>
+          <button class="btn" style="padding:10px 16px;font-size:14px;" onclick="closeActiveChat()">Close</button>
+        </div>
       </div>
       <div class="chat-messages" id="chatMessages">
         <div class="empty-state">Select a contact to start chatting</div>
       </div>
+      <div class="recording-bar" id="recordingBar">
+        <div class="rec-dot"></div>
+        <div class="rec-timer" id="recTimer">0:00</div>
+        <button class="rec-cancel" onclick="cancelRecording()">Cancel</button>
+        <button class="rec-send" onclick="sendRecording()">Send</button>
+      </div>
       <div class="chat-composer hidden" id="chatComposer">
         <input type="text" id="chatInput" placeholder="Message..." autocomplete="off">
+        <button onclick="startRecording()" id="micBtn" title="Voice message" style="background:var(--panel-light);">
+          <svg viewBox="0 0 24 24" fill="var(--text)" style="width:22px;height:22px;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
         <button onclick="sendChat()">
           <svg viewBox="0 0 24 24" fill="#000"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
+      <input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
     </div>
 
     <!-- LINK VIEW -->
@@ -205,7 +257,7 @@
           <div class="label">Reply Code (Send this back)</div>
           <div class="code-box" id="answerCodeBox"></div>
           <button class="btn" onclick="copyText('answerCodeBox')">Copy Reply</button>
-          <p style="font-size:14px;color:var(--green);text-align:center;">Waiting for them to connect...</p>
+          <p id="waitingMsg" style="font-size:14px;color:var(--green);text-align:center;">Waiting for them to connect...</p>
         </div>
       </div>
     </div>
@@ -237,6 +289,29 @@
         <div style="display:flex; justify-content:space-between; margin-top:12px; align-items:center;">
           <div class="label" style="margin:0;">Mesh ID</div>
           <div style="font-family:monospace; font-size:14px; color:var(--accent);" id="settingsId"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Notifications</h2>
+        <div class="toggle-row">
+          <div>
+            <div style="font-size:16px;font-weight:600;">Push Notifications</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;">Get notified of new messages</div>
+          </div>
+          <div class="toggle" id="notifToggle" onclick="toggleNotifications()">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Data</h2>
+        <button class="btn" onclick="exportIdentity()">Export Identity Backup</button>
+        <button class="btn" onclick="showImportPrompt()">Import Identity Backup</button>
+        <div id="importBlock" class="hidden" style="margin-top:4px;display:flex;flex-direction:column;gap:12px;">
+          <textarea class="textarea" id="importDataInput" placeholder="Paste backup data here..." style="min-height:80px;font-family:monospace;font-size:13px;"></textarea>
+          <button class="btn btn-success" onclick="importIdentity()">Restore Backup</button>
         </div>
       </div>
 
@@ -282,11 +357,15 @@
   </nav>
 </div>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <script>
 'use strict';
 
 const te = new TextEncoder(), td = new TextDecoder();
-const STORE_KEY = 'meshcore_v3';
+const STORE_KEY = 'meshcore_v4';
+const LOCAL_KEY = 'meshcore_persistent';
+const CHUNK_SIZE = 16384;
 
 function $(id) { return document.getElementById(id); }
 function esc(s) { const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
@@ -306,7 +385,23 @@ async function sha256Hex(ab) {
   return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
 function shortId(fp) { return fp.slice(0,8).toUpperCase(); }
+function formatDuration(s) { return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function formatFileSize(b) {
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
 
+function showToast(text, type) {
+  const c=$('toastContainer');
+  const t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  t.textContent=text;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
+}
+
+// PWA setup
 (function setupPWA() {
   const svg = $('logo-svg').outerHTML.replace('class="hidden"', '');
   const encodedSvg = 'data:image/svg+xml;base64,' + btoa(svg);
@@ -318,7 +413,8 @@ function shortId(fp) { return fp.slice(0,8).toUpperCase(); }
   const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
   document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(manifestBlob)}">`);
   
-  const swCode = `self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;
+  const swCode = `self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));
+self.addEventListener('notificationclick', e => { e.notification.close(); e.waitUntil(clients.matchAll({type:'window'}).then(c=>{if(c.length>0)c[0].focus();else clients.openWindow('/');})); });`;
   const swBlob = new Blob([swCode], {type: 'application/javascript'});
   if ('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
 })();
@@ -329,31 +425,63 @@ let state = {
   chats: {},
   broadcasts: [],
   pin: null,
-  activeChat: null
+  activeChat: null,
+  notificationsEnabled: false
 };
 
 const net = {
   conns: {},
   pendingOffer: null,
-  saveTimer: null
+  saveTimer: null,
+  fileTransfers: {},
+  mediaRecorder: null,
+  recordingChunks: [],
+  recordingSeconds: 0,
+  recordingTimer: null
 };
 
+// ============ PERSISTENCE (localStorage + window.name fallback) ============
 function saveState() {
   const dump = {
     me: { nickname: state.me.nickname, spkiB64: state.me.spkiB64, pkcs8B64: state.me.pkcs8B64 },
     contacts: state.contacts,
-    chats: state.chats,
+    chats: {},
     broadcasts: state.broadcasts.slice(-50),
-    pin: state.pin
+    pin: state.pin,
+    notificationsEnabled: state.notificationsEnabled
   };
-  try { window.name = STORE_KEY + btoa(unescape(encodeURIComponent(JSON.stringify(dump)))); } catch(e){}
+  // Save chats but limit per contact to last 200 messages
+  for(let id in state.chats) {
+    dump.chats[id] = state.chats[id].slice(-200);
+  }
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(dump))));
+  
+  // Primary: localStorage
+  try { localStorage.setItem(LOCAL_KEY, encoded); } catch(e){}
+  // Fallback: window.name
+  try { window.name = STORE_KEY + encoded; } catch(e){}
 }
 function queueSave() { clearTimeout(net.saveTimer); net.saveTimer = setTimeout(saveState, 300); }
 
 async function loadState() {
-  if (window.name.startsWith(STORE_KEY)) {
+  let raw = null;
+  
+  // Try localStorage first
+  try {
+    const stored = localStorage.getItem(LOCAL_KEY);
+    if(stored) raw = stored;
+  } catch(e){}
+  
+  // Fallback to window.name
+  if(!raw && window.name.startsWith(STORE_KEY)) {
+    raw = window.name.slice(STORE_KEY.length);
+    // Migrate to localStorage
+    try { localStorage.setItem(LOCAL_KEY, raw); } catch(e){}
+  }
+  
+  if(raw) {
     try {
-      const dump = JSON.parse(decodeURIComponent(escape(atob(window.name.slice(STORE_KEY.length)))));
+      const dump = JSON.parse(decodeURIComponent(escape(atob(raw))));
       if(dump.me) {
         state.me.nickname = dump.me.nickname;
         state.me.spkiB64 = dump.me.spkiB64;
@@ -369,7 +497,8 @@ async function loadState() {
       state.chats = dump.chats || {};
       state.broadcasts = dump.broadcasts || [];
       state.pin = dump.pin || null;
-    } catch(e) { console.error("Corrupt state"); }
+      state.notificationsEnabled = dump.notificationsEnabled || false;
+    } catch(e) { console.error("Corrupt state, starting fresh"); }
   }
   
   if (!state.me.keyPair) {
@@ -382,10 +511,12 @@ async function loadState() {
     state.me.fp = await sha256Hex(spki);
     state.me.id = shortId(state.me.fp);
     state.me.nickname = 'Mesh_' + state.me.id.slice(0,4);
+    saveState();
   }
   
   $('settingsName').value = state.me.nickname;
   $('settingsId').textContent = state.me.id;
+  updateNotifToggle();
   renderContacts();
   renderBroadcasts();
   
@@ -397,6 +528,7 @@ async function loadState() {
   }
 }
 
+// ============ NAVIGATION ============
 function switchTab(tabId) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -404,6 +536,7 @@ function switchTab(tabId) {
   document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
 }
 
+// ============ PIN LOCK ============
 let pinAttempt = '';
 function enterPin(val) {
   if(val === 'C') pinAttempt = '';
@@ -411,9 +544,7 @@ function enterPin(val) {
   else if(pinAttempt.length < 4) pinAttempt += val;
   
   const dots = $('lockDots').children;
-  for(let i=0; i<4; i++) {
-    dots[i].className = 'pin-dot' + (i < pinAttempt.length ? ' filled' : '');
-  }
+  for(let i=0; i<4; i++) dots[i].className = 'pin-dot' + (i < pinAttempt.length ? ' filled' : '');
   
   if(pinAttempt.length === 4) {
     if(pinAttempt === state.pin) {
@@ -435,13 +566,15 @@ function enterPin(val) {
 function togglePinSetup() { $('pinSetupBlock').classList.toggle('hidden'); }
 function savePin() {
   const val = $('pinInput').value;
-  if(val.length === 4) { state.pin = val; queueSave(); $('pinSetupBlock').classList.add('hidden'); $('pinSetupBtn').textContent='Change App PIN'; $('pinInput').value=''; alert('PIN Saved');}
-  else alert('PIN must be 4 digits');
+  if(val.length === 4) { state.pin = val; queueSave(); $('pinSetupBlock').classList.add('hidden'); $('pinSetupBtn').textContent='Change App PIN'; $('pinInput').value=''; showToast('PIN saved','success');}
+  else showToast('PIN must be 4 digits','error');
 }
-function removePin() { state.pin = null; queueSave(); $('pinSetupBlock').classList.add('hidden'); $('pinSetupBtn').textContent='Set App PIN'; alert('PIN Removed'); }
+function removePin() { state.pin = null; queueSave(); $('pinSetupBlock').classList.add('hidden'); $('pinSetupBtn').textContent='Set App PIN'; showToast('PIN removed','success'); }
 function nukeApp() {
   if(confirm("DANGER: This wipes all keys, contacts, and messages. Continue?")) {
-    window.name = ''; location.reload();
+    window.name = '';
+    try { localStorage.removeItem(LOCAL_KEY); } catch(e){}
+    location.reload();
   }
 }
 function updateName() {
@@ -449,6 +582,7 @@ function updateName() {
   if(n) { state.me.nickname = n; queueSave(); broadcastMeta(); }
 }
 
+// ============ CRYPTO ============
 async function deriveAes(peerPubB64) {
   const remoteKey = await crypto.subtle.importKey('spki', b642ab(peerPubB64), {name:'ECDH', namedCurve:'P-256'}, false, []);
   return await crypto.subtle.deriveKey(
@@ -466,6 +600,7 @@ async function decData(aesKey, frame) {
   return JSON.parse(td.decode(pt));
 }
 
+// ============ SIGNALING ============
 function makeSignal(desc) {
   return btoa(JSON.stringify({ sdp: desc, pub: state.me.spkiB64, nick: state.me.nickname, id: state.me.id }));
 }
@@ -476,9 +611,15 @@ function makePC(peerId) {
   pc.onconnectionstatechange = () => {
     if(peerId && net.conns[peerId]) {
       const s = pc.connectionState;
+      const wasLive = net.conns[peerId].live;
       net.conns[peerId].live = (s==='connected');
       renderContacts();
       if(state.activeChat === peerId) updateChatHeader();
+      // Update waiting message when connected
+      if(s==='connected' && !wasLive) {
+        const wm = $('waitingMsg');
+        if(wm) { wm.textContent = 'Connected!'; wm.style.color = 'var(--green)'; }
+      }
     }
   };
   return pc;
@@ -491,11 +632,15 @@ function waitIce(pc) {
   });
 }
 function wireDC(dc, peerId) {
+  dc.binaryType = 'arraybuffer';
   dc.onopen = () => {
     if(net.conns[peerId]) net.conns[peerId].live = true;
     renderContacts();
     if(state.activeChat === peerId) updateChatHeader();
     sendTo(peerId, { type: 'meta', nick: state.me.nickname });
+    const wm = $('waitingMsg');
+    if(wm) { wm.textContent = 'Connected!'; wm.style.color = 'var(--green)'; }
+    showToast('Connected to ' + (state.contacts[peerId]?.nickname || peerId), 'success');
   };
   dc.onclose = () => {
     if(net.conns[peerId]) net.conns[peerId].live = false;
@@ -503,6 +648,11 @@ function wireDC(dc, peerId) {
     if(state.activeChat === peerId) updateChatHeader();
   };
   dc.onmessage = async (e) => {
+    // Handle binary (file chunks)
+    if(e.data instanceof ArrayBuffer) {
+      handleFileChunk(peerId, e.data);
+      return;
+    }
     try {
       const frame = JSON.parse(e.data);
       if(frame.t !== 'e') return;
@@ -510,12 +660,12 @@ function wireDC(dc, peerId) {
       if(!aes) return;
       const payload = await decData(aes, frame);
       handlePayload(peerId, payload);
-    } catch(err) {}
+    } catch(err) { console.error('DC message error:', err); }
   };
 }
 
 function registerContact(id, nick, pub) {
-  if(!state.contacts[id]) state.contacts[id] = { id, nickname: nick, pubB64: pub };
+  if(!state.contacts[id]) state.contacts[id] = { id, nickname: nick, pubB64: pub, unread: 0 };
   else { state.contacts[id].nickname = nick; state.contacts[id].pubB64 = pub; }
   if(!state.chats[id]) state.chats[id] = [];
   queueSave();
@@ -525,10 +675,10 @@ function registerContact(id, nick, pub) {
 function copyText(id) {
   const el = $(id);
   const t = el.tagName === 'TEXTAREA' ? el.value : el.textContent;
-  navigator.clipboard.writeText(t).catch(()=>{});
-  alert('Copied!');
+  navigator.clipboard.writeText(t).then(()=>showToast('Copied to clipboard','success')).catch(()=>showToast('Copy failed','error'));
 }
 
+// ============ CONNECTION FLOW ============
 async function createInvite() {
   $('btnCreateInvite').disabled = true;
   $('inviteCodeBox').textContent = 'Gathering network candidates...';
@@ -548,7 +698,7 @@ async function createInvite() {
 
 async function finalizeInvite() {
   const txt = $('replyInput').value.trim();
-  if(!txt || !net.pendingOffer) return alert('Generate invite first and paste valid reply.');
+  if(!txt || !net.pendingOffer) return showToast('Generate invite first and paste valid reply','error');
   try {
     $('btnFinalize').disabled = true;
     const sig = parseSignal(txt);
@@ -564,9 +714,9 @@ async function finalizeInvite() {
     
     $('replyInput').value = '';
     $('inviteBlock').classList.add('hidden');
-    alert('Connected! Check Contacts tab.');
+    showToast('Connected! Check Contacts tab.','success');
     switchTab('view-contacts');
-  } catch(e) { alert('Invalid reply code'); }
+  } catch(e) { showToast('Invalid reply code','error'); }
   $('btnFinalize').disabled = false;
 }
 
@@ -595,17 +745,31 @@ async function acceptInvite() {
     
     $('answerCodeBox').textContent = makeSignal(pc.localDescription);
     $('answerBlock').classList.remove('hidden');
+    $('waitingMsg').textContent = 'Waiting for them to connect...';
+    $('waitingMsg').style.color = 'var(--green)';
     $('inviteInput').value = '';
-  } catch(e) { alert('Invalid invite code'); }
+  } catch(e) { showToast('Invalid invite code','error'); }
   $('btnAcceptInvite').disabled = false;
 }
 
+// ============ DATA CHANNEL MESSAGING ============
 async function sendTo(peerId, payload) {
   const conn = net.conns[peerId];
   if(conn && conn.live && conn.dc && conn.dc.readyState === 'open' && conn.aesKey) {
     const frame = await encData(conn.aesKey, payload);
     conn.dc.send(JSON.stringify(frame));
+    return true;
   }
+  return false;
+}
+
+// Send raw binary (for file chunks)
+function sendRaw(peerId, buffer) {
+  const conn = net.conns[peerId];
+  if(conn && conn.live && conn.dc && conn.dc.readyState === 'open') {
+    try { conn.dc.send(buffer); return true; } catch(e) { return false; }
+  }
+  return false;
 }
 
 function handlePayload(peerId, p) {
@@ -617,8 +781,13 @@ function handlePayload(peerId, p) {
   }
   else if (p.type === 'chat') {
     state.chats[peerId].push({ text: p.text, side: 'peer', time: p.time });
+    if(state.activeChat !== peerId) {
+      state.contacts[peerId].unread = (state.contacts[peerId].unread || 0) + 1;
+    }
     queueSave();
-    if (state.activeChat === peerId) renderMessages();
+    if(state.activeChat === peerId) renderMessages();
+    renderContacts();
+    fireNotification(state.contacts[peerId]?.nickname || peerId, 'New message');
   }
   else if (p.type === 'status') {
     const name = state.contacts[peerId]?.nickname || 'Unknown';
@@ -626,13 +795,42 @@ function handlePayload(peerId, p) {
     if(state.broadcasts.length > 50) state.broadcasts.shift();
     queueSave();
     renderBroadcasts();
+    fireNotification(name, 'New broadcast');
+  }
+  else if (p.type === 'voice') {
+    state.chats[peerId].push({ type: 'voice', audioData: p.audioData, duration: p.duration, side: 'peer', time: p.time });
+    if(state.activeChat !== peerId) {
+      state.contacts[peerId].unread = (state.contacts[peerId].unread || 0) + 1;
+    }
+    queueSave();
+    if(state.activeChat === peerId) renderMessages();
+    renderContacts();
+    fireNotification(state.contacts[peerId]?.nickname || peerId, 'Voice message');
+  }
+  else if (p.type === 'file-start') {
+    net.fileTransfers[p.fileId] = {
+      fileName: p.fileName, fileSize: p.fileSize, fileType: p.fileType,
+      chunks: [], received: 0
+    };
+    state.chats[peerId].push({ type: 'file', fileId: p.fileId, fileName: p.fileName, fileSize: p.fileSize, side: 'peer', time: p.time, progress: 0 });
+    queueSave();
+    if(state.activeChat === peerId) renderMessages();
+  }
+  else if (p.type === 'file-end') {
+    receiveFileEnd(peerId, p.fileId);
   }
 }
 
+// ============ CHAT ============
 function openChat(peerId) {
   state.activeChat = peerId;
+  if(state.contacts[peerId]) {
+    state.contacts[peerId].unread = 0;
+    queueSave();
+  }
   updateChatHeader();
   renderMessages();
+  renderContacts();
   switchTab('view-chat');
   $('chatComposer').classList.remove('hidden');
 }
@@ -642,6 +840,7 @@ function closeActiveChat() {
   $('chatPeerId').textContent = '';
   $('chatLiveDot').className = 'status-dot';
   $('chatComposer').classList.add('hidden');
+  $('recordingBar').classList.remove('active');
   $('chatMessages').innerHTML = '<div class="empty-state">Select a contact to start chatting</div>';
   switchTab('view-contacts');
 }
@@ -653,23 +852,51 @@ function updateChatHeader() {
   const isLive = net.conns[c.id]?.live;
   $('chatLiveDot').className = 'status-dot' + (isLive ? ' live' : '');
 }
+
 function renderMessages() {
   if(!state.activeChat) return;
   const msgs = state.chats[state.activeChat] || [];
   const box = $('chatMessages');
   box.innerHTML = '';
   if(msgs.length === 0) {
-    box.innerHTML = `<div class="msg sys">Encrypted P2P connection established. Start typing!</div>`;
+    box.innerHTML = '<div class="msg sys">Encrypted P2P connection established. Start typing!</div>';
     return;
   }
   msgs.forEach(m => {
     const d = document.createElement('div');
-    d.className = `msg ${m.side}`;
-    d.innerHTML = `${esc(m.text)}<div class="msg-time">${esc(m.time)}</div>`;
+    d.className = `msg ${m.side === 'me' ? 'me' : (m.side === 'peer' ? 'peer' : 'sys')}`;
+    
+    if(m.type === 'voice') {
+      const bars = generateWaveformBars(m.side);
+      d.innerHTML = `
+        <div class="voice-msg">
+          <button class="voice-play-btn" onclick="playVoice(this,'${m.audioData}')">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="voice-waveform">${bars}</div>
+          <div class="voice-duration">${formatDuration(m.duration||0)}</div>
+        </div>
+        <div class="msg-time">${esc(m.time)}</div>`;
+    } else if(m.type === 'file') {
+      const ext = (m.fileName||'').split('.').pop().toUpperCase().slice(0,4);
+      d.innerHTML = `
+        <div class="file-msg" onclick="downloadFile('${m.fileId}')">
+          <div class="file-icon">${ext||'FILE'}</div>
+          <div class="file-details">
+            <div class="file-name">${esc(m.fileName)}</div>
+            <div class="file-size">${formatFileSize(m.fileSize||0)}</div>
+          </div>
+        </div>
+        ${m.progress !== undefined && m.progress < 100 ? `<div class="file-progress"><div class="file-progress-bar" style="width:${m.progress}%"></div></div>` : ''}
+        <div class="msg-time">${esc(m.time)}</div>`;
+    } else {
+      d.innerHTML = `${esc(m.text)}<div class="msg-time">${esc(m.time)}</div>`;
+    }
     box.appendChild(d);
   });
   box.scrollTop = box.scrollHeight;
 }
+
 function sendChat() {
   const id = state.activeChat;
   const txt = $('chatInput').value.trim();
@@ -680,10 +907,232 @@ function sendChat() {
   state.chats[id].push({ text: txt, side: 'me', time });
   queueSave();
   renderMessages();
-  sendTo(id, { type: 'chat', text: txt, time });
+  const sent = sendTo(id, { type: 'chat', text: txt, time });
+  if(!sent) showToast('Peer offline - message saved locally','error');
 }
 $('chatInput').addEventListener('keypress', e => { if(e.key === 'Enter') sendChat(); });
 
+// ============ VOICE MESSAGES ============
+async function startRecording() {
+  if(!state.activeChat) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    let mimeType = 'audio/webm;codecs=opus';
+    if(!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'audio/webm';
+    if(!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'audio/mp4';
+    if(!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
+
+    const opts = mimeType ? { mimeType } : {};
+    net.mediaRecorder = new MediaRecorder(stream, opts);
+    net.recordingChunks = [];
+    net.recordingSeconds = 0;
+
+    net.mediaRecorder.ondataavailable = (e) => {
+      if(e.data.size > 0) net.recordingChunks.push(e.data);
+    };
+    net.mediaRecorder.onstop = () => { stream.getTracks().forEach(t => t.stop()); };
+    net.mediaRecorder.start(100);
+
+    $('chatComposer').classList.add('hidden');
+    $('recordingBar').classList.add('active');
+    $('recTimer').textContent = '0:00';
+
+    net.recordingTimer = setInterval(() => {
+      net.recordingSeconds++;
+      $('recTimer').textContent = formatDuration(net.recordingSeconds);
+    }, 1000);
+  } catch(e) {
+    showToast('Microphone access denied','error');
+  }
+}
+
+function cancelRecording() {
+  if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive') net.mediaRecorder.stop();
+  clearInterval(net.recordingTimer);
+  net.recordingChunks = [];
+  net.recordingSeconds = 0;
+  $('recordingBar').classList.remove('active');
+  $('chatComposer').classList.remove('hidden');
+}
+
+async function sendRecording() {
+  if(!net.mediaRecorder || net.mediaRecorder.state === 'inactive') return;
+  const duration = net.recordingSeconds;
+  clearInterval(net.recordingTimer);
+
+  return new Promise(resolve => {
+    const origOnStop = net.mediaRecorder.onstop;
+    net.mediaRecorder.onstop = () => {
+      if(net.mediaRecorder.stream) net.mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(net.recordingChunks, { type: net.recordingChunks[0]?.type || 'audio/webm' });
+      const reader = new FileReader();
+      reader.onload = () => {
+        const audioData = reader.result;
+        const time = stamp();
+        const peerId = state.activeChat;
+        if(peerId) {
+          state.chats[peerId].push({ type: 'voice', audioData, duration, side: 'me', time });
+          queueSave();
+          renderMessages();
+          sendTo(peerId, { type: 'voice', audioData, duration, time });
+        }
+        net.recordingChunks = [];
+        net.recordingSeconds = 0;
+        $('recordingBar').classList.remove('active');
+        $('chatComposer').classList.remove('hidden');
+        resolve();
+      };
+      reader.readAsDataURL(blob);
+    };
+    net.mediaRecorder.stop();
+  });
+}
+
+function playVoice(btn, audioData) {
+  const audio = new Audio(audioData);
+  const origSvg = btn.innerHTML;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  audio.play();
+  audio.onended = () => { btn.innerHTML = origSvg; };
+  btn.onclick = () => {
+    if(audio.paused) { audio.play(); btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; }
+    else { audio.pause(); btn.innerHTML = origSvg; }
+  };
+}
+
+function generateWaveformBars(side) {
+  let bars = '';
+  for(let i=0; i<20; i++) {
+    const h = Math.floor(Math.random()*18)+5;
+    bars += `<div class="voice-bar" style="height:${h}px"></div>`;
+  }
+  return bars;
+}
+
+// ============ FILE SENDING ============
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if(!file || !state.activeChat) return;
+  if(file.size > 50*1024*1024) {
+    showToast('File too large (max 50MB)','error');
+    event.target.value = '';
+    return;
+  }
+  sendFile(state.activeChat, file);
+  event.target.value = '';
+}
+
+function sendFile(peerId, file) {
+  const fileId = 'f_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+  const time = stamp();
+
+  sendTo(peerId, { type: 'file-start', fileId, fileName: file.name, fileSize: file.size, fileType: file.type, time });
+
+  state.chats[peerId].push({ type: 'file', fileId, fileName: file.name, fileSize: file.size, side: 'me', time, progress: 0 });
+  queueSave();
+  if(state.activeChat === peerId) renderMessages();
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const buffer = reader.result;
+    const totalChunks = Math.ceil(buffer.byteLength / CHUNK_SIZE);
+    let chunkIndex = 0;
+
+    function sendNextChunk() {
+      if(chunkIndex >= totalChunks) {
+        sendTo(peerId, { type: 'file-end', fileId });
+        updateFileProgress(peerId, fileId, 100);
+        return;
+      }
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, buffer.byteLength);
+      const chunk = buffer.slice(start, end);
+
+      const header = te.encode(fileId + '|');
+      const combined = new Uint8Array(header.length + chunk.byteLength);
+      combined.set(header);
+      combined.set(new Uint8Array(chunk), header.length);
+
+      if(!sendRaw(peerId, combined.buffer)) {
+        showToast('File transfer failed','error');
+        return;
+      }
+
+      chunkIndex++;
+      const progress = Math.floor((chunkIndex / totalChunks) * 100);
+      updateFileProgress(peerId, fileId, progress);
+
+      const conn = net.conns[peerId];
+      const delay = (conn && conn.dc && conn.dc.bufferedAmount > CHUNK_SIZE * 8) ? 100 : 10;
+      setTimeout(sendNextChunk, delay);
+    }
+    sendNextChunk();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function handleFileChunk(peerId, buffer) {
+  const uint8 = new Uint8Array(buffer);
+  let sepIndex = -1;
+  for(let i=0; i<Math.min(uint8.length,100); i++) {
+    if(uint8[i] === 0x7C) { sepIndex = i; break; }
+  }
+  if(sepIndex === -1) return;
+
+  const fileId = td.decode(uint8.slice(0, sepIndex));
+  const chunkData = uint8.slice(sepIndex + 1);
+  const transfer = net.fileTransfers[fileId];
+  if(!transfer) return;
+
+  transfer.chunks.push(chunkData);
+  transfer.received += chunkData.length;
+  const progress = Math.floor((transfer.received / transfer.fileSize) * 100);
+  updateFileProgress(peerId, fileId, progress);
+}
+
+function receiveFileEnd(peerId, fileId) {
+  const transfer = net.fileTransfers[fileId];
+  if(!transfer) return;
+
+  const totalSize = transfer.chunks.reduce((sum, c) => sum + c.length, 0);
+  const combined = new Uint8Array(totalSize);
+  let offset = 0;
+  transfer.chunks.forEach(chunk => { combined.set(chunk, offset); offset += chunk.length; });
+
+  const blob = new Blob([combined], { type: transfer.fileType || 'application/octet-stream' });
+  transfer.blobUrl = URL.createObjectURL(blob);
+
+  updateFileProgress(peerId, fileId, 100);
+
+  if(state.activeChat !== peerId) {
+    state.contacts[peerId].unread = (state.contacts[peerId].unread || 0) + 1;
+  }
+  queueSave();
+  renderContacts();
+  fireNotification(state.contacts[peerId]?.nickname || peerId, 'File received: ' + transfer.fileName);
+  showToast('File received: ' + transfer.fileName, 'success');
+}
+
+function updateFileProgress(peerId, fileId, progress) {
+  const msgs = state.chats[peerId] || [];
+  const idx = msgs.findIndex(m => m.fileId === fileId);
+  if(idx !== -1) { msgs[idx].progress = progress; queueSave(); }
+  if(state.activeChat === peerId) renderMessages();
+}
+
+function downloadFile(fileId) {
+  const transfer = net.fileTransfers[fileId];
+  if(!transfer || !transfer.blobUrl) {
+    showToast('File not available for download','error');
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = transfer.blobUrl;
+  a.download = transfer.fileName;
+  a.click();
+}
+
+// ============ CONTACTS ============
 function renderContacts() {
   const box = $('contactsList');
   const ids = Object.keys(state.contacts);
@@ -697,6 +1146,7 @@ function renderContacts() {
       const c = state.contacts[id];
       const isLive = net.conns[id]?.live;
       if(isLive) liveCount++;
+      const unread = c.unread || 0;
       const el = document.createElement('div');
       el.className = 'contact-item';
       el.onclick = () => openChat(id);
@@ -705,7 +1155,10 @@ function renderContacts() {
           <h3>${esc(c.nickname)}</h3>
           <p>ID: ${esc(id)}</p>
         </div>
-        <div class="status-dot ${isLive ? 'live' : ''}"></div>
+        <div class="contact-right">
+          ${unread > 0 ? `<div class="unread-badge">${unread}</div>` : ''}
+          <div class="status-dot ${isLive ? 'live' : ''}"></div>
+        </div>
       `;
       box.appendChild(el);
     });
@@ -713,6 +1166,7 @@ function renderContacts() {
   $('connCountBadge').textContent = `${liveCount} Online`;
 }
 
+// ============ BROADCASTS ============
 function renderBroadcasts() {
   const box = $('broadcastFeed');
   if(state.broadcasts.length === 0) {
@@ -739,17 +1193,107 @@ function postStatus() {
   if(state.broadcasts.length > 50) state.broadcasts.shift();
   queueSave();
   renderBroadcasts();
-  
-  Object.keys(net.conns).forEach(id => {
-    sendTo(id, { type: 'status', text: txt, time });
-  });
+  Object.keys(net.conns).forEach(id => { sendTo(id, { type: 'status', text: txt, time }); });
 }
 function broadcastMeta() {
-  Object.keys(net.conns).forEach(id => {
-    sendTo(id, { type: 'meta', nick: state.me.nickname });
-  });
+  Object.keys(net.conns).forEach(id => { sendTo(id, { type: 'meta', nick: state.me.nickname }); });
 }
 
+// ============ NOTIFICATIONS ============
+function toggleNotifications() {
+  if(!('Notification' in window)) { showToast('Notifications not supported','error'); return; }
+  if(!state.notificationsEnabled) {
+    Notification.requestPermission().then(perm => {
+      if(perm === 'granted') {
+        state.notificationsEnabled = true;
+        queueSave();
+        updateNotifToggle();
+        showToast('Notifications enabled','success');
+      } else { showToast('Permission denied','error'); }
+    });
+  } else {
+    state.notificationsEnabled = false;
+    queueSave();
+    updateNotifToggle();
+    showToast('Notifications disabled','success');
+  }
+}
+
+function updateNotifToggle() {
+  const t = $('notifToggle');
+  if(t) t.className = 'toggle' + (state.notificationsEnabled ? ' on' : '');
+}
+
+function fireNotification(title, body) {
+  if(!state.notificationsEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+  if(document.hasFocus()) return; // Don't notify if app is focused
+  try {
+    const n = new Notification('MeshCore', {
+      body: title + ': ' + body,
+      tag: 'meshcore-msg',
+      renotify: true,
+      silent: false
+    });
+    n.onclick = () => { window.focus(); n.close(); };
+    setTimeout(() => n.close(), 5000);
+  } catch(e) {}
+}
+
+// ============ EXPORT / IMPORT IDENTITY ============
+function exportIdentity() {
+  const data = {
+    me: { nickname: state.me.nickname, spkiB64: state.me.spkiB64, pkcs8B64: state.me.pkcs8B64 },
+    contacts: state.contacts,
+    exportedAt: Date.now(),
+    version: 2
+  };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  navigator.clipboard.writeText(encoded)
+    .then(() => showToast('Backup copied to clipboard','success'))
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = encoded; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('Backup copied to clipboard','success');
+    });
+}
+
+function showImportPrompt() { $('importBlock').classList.toggle('hidden'); }
+
+async function importIdentity() {
+  const encoded = $('importDataInput').value.trim();
+  if(!encoded) { showToast('Paste your backup data','error'); return; }
+  try {
+    const json = decodeURIComponent(escape(atob(encoded)));
+    const data = JSON.parse(json);
+    if(!data.me || !data.me.spkiB64 || !data.me.pkcs8B64) throw new Error('Invalid backup');
+
+    state.me.nickname = data.me.nickname;
+    state.me.spkiB64 = data.me.spkiB64;
+    state.me.pkcs8B64 = data.me.pkcs8B64;
+
+    const pubKey = await crypto.subtle.importKey('spki', b642ab(data.me.spkiB64), {name:'ECDH', namedCurve:'P-256'}, true, []);
+    const privKey = await crypto.subtle.importKey('pkcs8', b642ab(data.me.pkcs8B64), {name:'ECDH', namedCurve:'P-256'}, true, ['deriveKey']);
+    state.me.keyPair = { publicKey: pubKey, privateKey: privKey };
+    state.me.fp = await sha256Hex(b642ab(data.me.spkiB64));
+    state.me.id = shortId(state.me.fp);
+
+    if(data.contacts) state.contacts = data.contacts;
+
+    $('settingsName').value = state.me.nickname;
+    $('settingsId').textContent = state.me.id;
+    $('importBlock').classList.add('hidden');
+    $('importDataInput').value = '';
+
+    saveState();
+    renderContacts();
+    showToast('Identity restored successfully','success');
+  } catch(e) {
+    console.error('Import error:', e);
+    showToast('Invalid backup data','error');
+  }
+}
+
+// ============ INIT ============
 window.onload = () => { loadState(); };
 </script>
 </body>
