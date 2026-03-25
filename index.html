@@ -5,433 +5,437 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MeshCore</title>
 <style>
-  :root {
-    --bg: #09111a; --bg2: #121e2d; --panel: #172536; --panel-light: #1d2d41;
-    --border: #2a3c55; --border-hl: #415a7d;
-    --text: #e8eef7; --muted: #93a6bf;
-    --accent: #6b95f5; --accent-hover: #4f76d4;
-    --green: #88d7b4; --red: #d78998;
-    --nav-h: 85px;
-    --shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-  body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; flex-direction: column; font-size: 16px; }
+ :root {
+  --bg: #09111a; --bg2: #121e2d; --panel: #172536; --panel-light: #1d2d41;
+  --border: #2a3c55; --border-hl: #415a7d;
+  --text: #e8eef7; --muted: #93a6bf;
+  --accent: #6b95f5; --accent-hover: #4f76d4;
+  --green: #88d7b4; --red: #d78998;
+  --nav-h: 85px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.4);
+ }
+ * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+ body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; flex-direction: column; font-size: 16px; }
 
-  .hidden { display: none !important; }
-  .btn { border: none; padding: 16px 24px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; color: #fff; background: var(--panel-light); display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; min-height: 52px; width: 100%; }
-  .btn:active { transform: scale(0.96); }
-  .btn-primary { background: var(--accent); color: #081222; }
-  .btn-danger { background: var(--red); color: #20080d; }
-  .btn-success { background: var(--green); color: #0b1712; }
-  .input, .textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 14px; padding: 16px 18px; outline: none; font-size: 16px; transition: 0.2s; }
-  .input:focus, .textarea:focus { border-color: var(--accent); }
-  .textarea { resize: vertical; min-height: 100px; }
-  .code-box { background: var(--bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border); font-family: monospace; font-size: 13px; word-break: break-all; max-height: 150px; overflow-y: auto; color: var(--green); line-height: 1.5; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; }
-  .card h2 { font-size: 20px; }
-  .label { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+ .hidden { display: none !important; }
 
-  /* Splash & Lock */
-  #splash, #lockScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
-  .spider-web { width: 140px; height: 140px; animation: meshPulse 2s infinite ease-in-out; }
-  @keyframes meshPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.05);opacity:0.8} }
-  .title-splash { font-size: 28px; font-weight: 800; margin-top: 24px; letter-spacing: 3px; }
-  .pin-dots { display: flex; gap: 14px; margin: 24px 0; }
-  .pin-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); }
-  .pin-dot.filled { background: var(--accent); }
-  .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
-  .num-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .num-btn:active { background: var(--panel-light); }
+ .btn { border: none; padding: 16px 24px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; color: #fff; background: var(--panel-light); display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; min-height: 52px; width: 100%; }
+ .btn:active { transform: scale(0.96); }
+ .btn-primary { background: var(--accent); color: #081222; }
+ .btn-danger { background: var(--red); color: #20080d; }
+ .btn-success { background: var(--green); color: #0b1712; }
 
-  /* App shell — base tabbed layer */
-  #app { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
-  #base-layer { position: absolute; inset: 0; display: flex; flex-direction: column; }
-  .view { display: none; flex-direction: column; flex: 1; min-height: 0; overflow-y: auto; padding: 20px; padding-bottom: calc(20px + var(--nav-h)); }
-  .view.active { display: flex; }
-  .view-header { padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  .view-header h1 { font-size: 26px; font-weight: 800; }
-  .badge { background: var(--panel-light); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent); }
+ .input, .textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 14px; padding: 16px 18px; outline: none; font-size: 16px; transition: 0.2s; }
+ .input:focus, .textarea:focus { border-color: var(--accent); }
+ .textarea { resize: vertical; min-height: 100px; }
 
-  /* Bottom Nav */
-  #bottomNav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
-  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; transition: 0.2s; gap: 6px; }
-  .nav-item svg { width: 26px; height: 26px; fill: currentColor; }
-  .nav-item span { font-size: 11px; font-weight: 700; }
-  .nav-item.active { color: var(--accent); }
-  .nav-item:active { background: rgba(255,255,255,0.05); }
+ .code-box { background: var(--bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border); font-family: monospace; font-size: 13px; word-break: break-all; max-height: 150px; overflow-y: auto; color: var(--green); line-height: 1.5; }
 
-  /* Screens — slide in over base layer */
-  .screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg); transform: translateX(100%); transition: transform 0.28s cubic-bezier(.4,0,.2,1); z-index: 50; }
-  .screen.active { transform: translateX(0); }
-  .screen-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
-  .screen-header h2 { font-size: 20px; font-weight: 700; flex: 1; }
-  .back-btn { background: none; border: none; color: var(--accent); font-size: 16px; font-weight: 700; cursor: pointer; padding: 6px 2px; }
-  .screen-body { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 0; }
+ .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; }
+ .card h2 { font-size: 20px; }
+ .label { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+ .divider { height: 1px; background: var(--border); margin: 4px 0; }
 
-  /* Chat screen specifics — NO bottom nav, NO overflow */
-  #screen-chat { z-index: 60; }
-  .chat-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  .chat-header-left { display: flex; align-items: center; gap: 12px; }
-  .chat-header h3 { font-size: 18px; font-weight: 700; }
-  .chat-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .chat-messages { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .chat-messages::-webkit-scrollbar { width: 3px; }
-  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  .chat-composer { flex-shrink: 0; display: flex; gap: 10px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-  .chat-composer input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 24px; padding: 14px 18px; outline: none; font-size: 16px; min-width: 0; }
-  .chat-composer input:focus { border-color: var(--accent); }
-  .composer-btn { background: var(--panel-light); color: var(--text); border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
-  .composer-btn:active { transform: scale(0.9); }
-  .composer-btn.send { background: var(--accent); color: #000; }
-  .composer-btn svg { width: 22px; height: 22px; fill: currentColor; }
-  .recording-bar { flex-shrink: 0; display: none; gap: 12px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-  .recording-bar.active { display: flex; }
-  .rec-dot { width: 12px; height: 12px; background: var(--red); border-radius: 50%; animation: recPulse 1s ease-in-out infinite; flex-shrink: 0; }
-  @keyframes recPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .rec-timer { flex: 1; font-size: 16px; font-weight: 700; color: var(--red); }
-  .rec-cancel { padding: 10px 16px; background: transparent; border: 1px solid var(--muted); color: var(--muted); border-radius: 10px; font-size: 14px; cursor: pointer; }
-  .rec-send { padding: 10px 20px; background: var(--accent); border: none; color: #000; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
+ /* Splash & Lock */
+ #splash, #lockScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
+ .spider-web { width: 140px; height: 140px; animation: meshPulse 2s infinite ease-in-out; }
+ @keyframes meshPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.05);opacity:0.8} }
+ .title-splash { font-size: 28px; font-weight: 800; margin-top: 24px; letter-spacing: 3px; }
 
-  /* Messages */
-  .msg { max-width: 78%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; word-break: break-word; }
-  .msg.me { align-self: flex-end; background: var(--accent); color: #000; border-bottom-right-radius: 4px; }
-  .msg.peer { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-  .msg.sys { align-self: center; background: transparent; color: var(--muted); font-size: 13px; max-width: 92%; text-align: center; padding: 4px 10px; }
-  .msg-time { font-size: 11px; opacity: 0.65; margin-top: 5px; text-align: right; }
-  .msg.peer .msg-time { text-align: left; }
+ .pin-dots { display: flex; gap: 14px; margin: 24px 0; }
+ .pin-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); }
+ .pin-dot.filled { background: var(--accent); }
+ .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+ .num-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+ .num-btn:active { background: var(--panel-light); }
 
-  /* Voice */
-  .voice-msg { display: flex; align-items: center; gap: 10px; min-width: 160px; }
-  .voice-play-btn { width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .msg.me .voice-play-btn { background: rgba(0,0,0,0.2); color: #000; }
-  .msg.peer .voice-play-btn { background: var(--accent); color: #000; }
-  .voice-waveform { flex: 1; display: flex; align-items: center; gap: 2px; height: 26px; }
-  .voice-bar { width: 3px; border-radius: 2px; }
-  .msg.me .voice-bar { background: rgba(0,0,0,0.35); }
-  .msg.peer .voice-bar { background: var(--accent); opacity: 0.6; }
-  .voice-duration { font-size: 12px; opacity: 0.7; flex-shrink: 0; }
+ /* App shell */
+ #app { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
+ #base-layer { position: absolute; inset: 0; display: flex; flex-direction: column; }
 
-  /* File */
-  .file-msg { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-  .file-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: 700; letter-spacing: -0.5px; }
-  .msg.me .file-icon { background: rgba(0,0,0,0.2); color: #000; }
-  .msg.peer .file-icon { background: var(--panel-light); color: var(--accent); }
-  .file-details { flex: 1; min-width: 0; }
-  .file-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-size-label { font-size: 12px; opacity: 0.7; margin-top: 2px; }
-  .file-progress { width: 100%; height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; margin-top: 6px; overflow: hidden; }
-  .file-progress-bar { height: 100%; border-radius: 2px; transition: width 0.3s; }
-  .msg.me .file-progress-bar { background: rgba(0,0,0,0.4); }
-  .msg.peer .file-progress-bar { background: var(--accent); }
+ /* ===== FIX: views are now absolutely positioned inside main ===== */
+ .view {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
+  padding-bottom: 20px;
+ }
+ .view.active { display: flex; }
 
-  /* Contact items */
-  .contact-item { display: flex; align-items: center; justify-content: space-between; padding: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; cursor: pointer; transition: background 0.15s; }
-  .contact-item:active { background: var(--panel-light); }
-  .contact-info h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-  .contact-info p { font-size: 13px; color: var(--muted); }
-  .contact-right { display: flex; align-items: center; gap: 10px; }
-  .status-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
-  .status-dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); }
-  .unread-badge { min-width: 20px; height: 20px; background: var(--accent); border-radius: 10px; font-size: 11px; font-weight: 700; color: #000; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+ .view-header { padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+ .view-header h1 { font-size: 26px; font-weight: 800; }
+ .badge { background: var(--panel-light); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent); }
 
-  /* Contact info screen */
-  .contact-avatar { width: 72px; height: 72px; border-radius: 36px; background: var(--panel-light); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: var(--accent); margin: 0 auto 6px; }
-  .info-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .info-row:last-child { border-bottom: none; }
-  .info-label { font-size: 13px; color: var(--muted); font-weight: 600; }
-  .info-value { font-size: 15px; font-weight: 600; text-align: right; max-width: 65%; word-break: break-all; }
+ /* Bottom Nav */
+ #bottomNav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
+ .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; transition: 0.2s; gap: 6px; }
+ .nav-item svg { width: 26px; height: 26px; fill: currentColor; }
+ .nav-item span { font-size: 11px; font-weight: 700; }
+ .nav-item.active { color: var(--accent); }
+ .nav-item:active { background: rgba(255,255,255,0.05); }
 
-  /* Reconnect banner */
-  .reconnect-banner { margin: 0 0 14px; padding: 14px 18px; background: var(--panel); border: 1px solid var(--accent); border-radius: 14px; display: flex; align-items: center; gap: 14px; }
-  .reconnect-banner-text { flex: 1; }
-  .reconnect-banner-text strong { font-size: 15px; display: block; margin-bottom: 2px; }
-  .reconnect-banner-text span { font-size: 13px; color: var(--muted); }
-  .reconnect-accept-btn { background: var(--accent); color: #000; border: none; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+ /* Screens — slide in over base layer */
+ .screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg); transform: translateX(100%); transition: transform 0.28s cubic-bezier(.4,0,.2,1); z-index: 50; }
+ .screen.active { transform: translateX(0); }
+ .screen-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+ .screen-header h2 { font-size: 20px; font-weight: 700; flex: 1; }
+ .back-btn { background: none; border: none; color: var(--accent); font-size: 16px; font-weight: 700; cursor: pointer; padding: 6px 2px; }
+ .screen-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; display: flex; flex-direction: column; gap: 0; }
 
-  /* Broadcasts */
-  .broadcast-item { background: var(--panel); padding: 18px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; }
-  .bc-header { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); margin-bottom: 10px; }
-  .bc-name { font-weight: 700; color: var(--accent); }
+ /* Chat screen specifics */
+ #screen-chat { z-index: 60; }
+ .chat-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+ .chat-header-left { display: flex; align-items: center; gap: 12px; }
+ .chat-header h3 { font-size: 18px; font-weight: 700; }
+ .chat-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+ .chat-messages { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+ .chat-messages::-webkit-scrollbar { width: 3px; }
+ .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+ .chat-composer { flex-shrink: 0; display: flex; gap: 10px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+ .chat-composer input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 24px; padding: 14px 18px; outline: none; font-size: 16px; min-width: 0; }
+ .chat-composer input:focus { border-color: var(--accent); }
+ .composer-btn { background: var(--panel-light); color: var(--text); border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
+ .composer-btn:active { transform: scale(0.9); }
+ .composer-btn.send { background: var(--accent); color: #000; }
+ .composer-btn svg { width: 22px; height: 22px; fill: currentColor; }
+ .recording-bar { flex-shrink: 0; display: none; gap: 12px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+ .recording-bar.active { display: flex; }
+ .rec-dot { width: 12px; height: 12px; background: var(--red); border-radius: 50%; animation: recPulse 1s ease-in-out infinite; flex-shrink: 0; }
+ @keyframes recPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+ .rec-timer { flex: 1; font-size: 16px; font-weight: 700; color: var(--red); }
+ .rec-cancel { padding: 10px 16px; background: transparent; border: 1px solid var(--muted); color: var(--muted); border-radius: 10px; font-size: 14px; cursor: pointer; }
+ .rec-send { padding: 10px 20px; background: var(--accent); border: none; color: #000; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
 
-  /* Settings */
-  .toggle-row { display: flex; align-items: center; justify-content: space-between; }
-  .toggle { width: 48px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
-  .toggle.on { background: var(--accent); }
-  .toggle-knob { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; }
-  .toggle.on .toggle-knob { transform: translateX(20px); }
+ /* Messages */
+ .msg { max-width: 78%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; word-break: break-word; }
+ .msg.me { align-self: flex-end; background: var(--accent); color: #000; border-bottom-right-radius: 4px; }
+ .msg.peer { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+ .msg.sys { align-self: center; background: transparent; color: var(--muted); font-size: 13px; max-width: 92%; text-align: center; padding: 4px 10px; }
+ .msg-time { font-size: 11px; opacity: 0.65; margin-top: 5px; text-align: right; }
+ .msg.peer .msg-time { text-align: left; }
 
-  /* Empty state */
-  .empty-state { color: var(--muted); text-align: center; margin-top: 50px; font-size: 16px; line-height: 1.7; }
+ /* Voice */
+ .voice-msg { display: flex; align-items: center; gap: 10px; min-width: 160px; }
+ .voice-play-btn { width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+ .msg.me .voice-play-btn { background: rgba(0,0,0,0.2); color: #000; }
+ .msg.peer .voice-play-btn { background: var(--accent); color: #000; }
+ .voice-waveform { flex: 1; display: flex; align-items: center; gap: 2px; height: 26px; }
+ .voice-bar { width: 3px; border-radius: 2px; }
+ .msg.me .voice-bar { background: rgba(0,0,0,0.35); }
+ .msg.peer .voice-bar { background: var(--accent); opacity: 0.6; }
+ .voice-duration { font-size: 12px; opacity: 0.7; flex-shrink: 0; }
 
-  /* Toast */
-  .toast-wrap { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; min-width: 200px; }
-  .toast { padding: 12px 22px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; color: var(--text); box-shadow: var(--shadow); animation: toastIn 0.25s ease; white-space: nowrap; text-align: center; }
-  .toast.ok { border-color: var(--green); }
-  .toast.err { border-color: var(--red); }
-  @keyframes toastIn { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+ /* File */
+ .file-msg { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+ .file-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: 700; letter-spacing: -0.5px; }
+ .msg.me .file-icon { background: rgba(0,0,0,0.2); color: #000; }
+ .msg.peer .file-icon { background: var(--panel-light); color: var(--accent); }
+ .file-details { flex: 1; min-width: 0; }
+ .file-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .file-size-label { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+ .file-progress { width: 100%; height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+ .file-progress-bar { height: 100%; border-radius: 2px; transition: width 0.3s; }
+ .msg.me .file-progress-bar { background: rgba(0,0,0,0.4); }
+ .msg.peer .file-progress-bar { background: var(--accent); }
+
+ /* Contact items */
+ .contact-item { display: flex; align-items: center; justify-content: space-between; padding: 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; cursor: pointer; transition: background 0.15s; }
+ .contact-item:active { background: var(--panel-light); }
+ .contact-info h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+ .contact-info p { font-size: 13px; color: var(--muted); }
+ .contact-right { display: flex; align-items: center; gap: 10px; }
+ .status-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+ .status-dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); }
+ .unread-badge { min-width: 20px; height: 20px; background: var(--accent); border-radius: 10px; font-size: 11px; font-weight: 700; color: #000; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+
+ /* Contact info screen */
+ .contact-avatar { width: 72px; height: 72px; border-radius: 36px; background: var(--panel-light); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: var(--accent); margin: 0 auto 6px; }
+ .info-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+ .info-row:last-child { border-bottom: none; }
+ .info-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+ .info-value { font-size: 15px; font-weight: 600; text-align: right; max-width: 65%; word-break: break-all; }
+
+ /* Reconnect banner */
+ .reconnect-banner { margin: 0 0 14px; padding: 14px 18px; background: var(--panel); border: 1px solid var(--accent); border-radius: 14px; display: flex; align-items: center; gap: 14px; }
+ .reconnect-banner-text { flex: 1; }
+ .reconnect-banner-text strong { font-size: 15px; display: block; margin-bottom: 2px; }
+ .reconnect-banner-text span { font-size: 13px; color: var(--muted); }
+ .reconnect-accept-btn { background: var(--accent); color: #000; border: none; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+
+ /* Broadcasts */
+ .broadcast-item { background: var(--panel); padding: 18px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; }
+ .bc-header { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+ .bc-name { font-weight: 700; color: var(--accent); }
+
+ /* Settings */
+ .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+ .toggle { width: 48px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+ .toggle.on { background: var(--accent); }
+ .toggle-knob { width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; }
+ .toggle.on .toggle-knob { transform: translateX(20px); }
+
+ /* Empty state */
+ .empty-state { color: var(--muted); text-align: center; margin-top: 50px; font-size: 16px; line-height: 1.7; }
+
+ /* Toast */
+ .toast-wrap { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; min-width: 200px; }
+ .toast { padding: 12px 22px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; color: var(--text); box-shadow: var(--shadow); animation: toastIn 0.25s ease; white-space: nowrap; text-align: center; }
+ .toast.ok { border-color: var(--green); }
+ .toast.err { border-color: var(--red); }
+ @keyframes toastIn { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
 
 <!-- Hidden SVG logo -->
 <svg id="logo-svg" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#09111a" rx="20"/>
-  <path d="M50 10 L50 90 M10 50 L90 50 M21.7 21.7 L78.3 78.3 M21.7 78.3 L78.3 21.7" stroke="#6b95f5" stroke-width="2" opacity="0.5"/>
-  <polygon points="50,20 71.2,28.8 80,50 71.2,71.2 50,80 28.8,71.2 20,50 28.8,28.8" fill="none" stroke="#88d7b4" stroke-width="2"/>
-  <polygon points="50,35 60.6,39.4 65,50 60.6,60.6 50,65 39.4,60.6 35,50 39.4,39.4" fill="none" stroke="#e8eef7" stroke-width="1.5"/>
-  <circle cx="50" cy="50" r="4" fill="#6b95f5"/>
+ <rect width="100" height="100" fill="#09111a" rx="20"/>
+ <path d="M50 10 L50 90 M10 50 L90 50 M21.7 21.7 L78.3 78.3 M21.7 78.3 L78.3 21.7" stroke="#6b95f5" stroke-width="2" opacity="0.5"/>
+ <polygon points="50,20 71.2,28.8 80,50 71.2,71.2 50,80 28.8,71.2 20,50 28.8,28.8" fill="none" stroke="#88d7b4" stroke-width="2"/>
+ <polygon points="50,35 60.6,39.4 65,50 60.6,60.6 50,65 39.4,60.6 35,50 39.4,39.4" fill="none" stroke="#e8eef7" stroke-width="1.5"/>
+ <circle cx="50" cy="50" r="4" fill="#6b95f5"/>
 </svg>
 
 <!-- Splash -->
 <div id="splash">
-  <svg class="spider-web" viewBox="0 0 100 100"><use href="#logo-svg" x="0" y="0" width="100" height="100"/></svg>
-  <div class="title-splash">MESHCORE</div>
+ <svg class="spider-web" viewBox="0 0 100 100"><use href="#logo-svg" x="0" y="0" width="100" height="100"/></svg>
+ <div class="title-splash">MESHCORE</div>
 </div>
 
 <!-- Lock Screen -->
 <div id="lockScreen" class="hidden">
-  <svg class="spider-web" viewBox="0 0 100 100" style="width:80px;height:80px;animation:none;"><use href="#logo-svg" x="0" y="0" width="100" height="100"/></svg>
-  <div class="title-splash" style="font-size:22px">APP LOCKED</div>
-  <div class="pin-dots" id="lockDots">
-    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-  </div>
-  <p id="lockMsg" style="color:var(--muted);font-size:16px;">Enter PIN</p>
-  <div class="numpad">
-    <div class="num-btn" onclick="enterPin(1)">1</div><div class="num-btn" onclick="enterPin(2)">2</div><div class="num-btn" onclick="enterPin(3)">3</div>
-    <div class="num-btn" onclick="enterPin(4)">4</div><div class="num-btn" onclick="enterPin(5)">5</div><div class="num-btn" onclick="enterPin(6)">6</div>
-    <div class="num-btn" onclick="enterPin(7)">7</div><div class="num-btn" onclick="enterPin(8)">8</div><div class="num-btn" onclick="enterPin(9)">9</div>
-    <div class="num-btn" onclick="enterPin('C')" style="font-size:16px;background:var(--red);border:none;">CLR</div>
-    <div class="num-btn" onclick="enterPin(0)">0</div>
-    <div class="num-btn" onclick="enterPin('X')" style="font-size:16px;">DEL</div>
-  </div>
+ <svg class="spider-web" viewBox="0 0 100 100" style="width:80px;height:80px;animation:none;"><use href="#logo-svg" x="0" y="0" width="100" height="100"/></svg>
+ <div class="title-splash" style="font-size:22px">APP LOCKED</div>
+ <div class="pin-dots" id="lockDots">
+  <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+ </div>
+ <p id="lockMsg" style="color:var(--muted);font-size:16px;">Enter PIN</p>
+ <div class="numpad">
+  <div class="num-btn" onclick="enterPin(1)">1</div><div class="num-btn" onclick="enterPin(2)">2</div><div class="num-btn" onclick="enterPin(3)">3</div>
+  <div class="num-btn" onclick="enterPin(4)">4</div><div class="num-btn" onclick="enterPin(5)">5</div><div class="num-btn" onclick="enterPin(6)">6</div>
+  <div class="num-btn" onclick="enterPin(7)">7</div><div class="num-btn" onclick="enterPin(8)">8</div><div class="num-btn" onclick="enterPin(9)">9</div>
+  <div class="num-btn" onclick="enterPin('C')" style="font-size:16px;background:var(--red);border:none;">CLR</div>
+  <div class="num-btn" onclick="enterPin(0)">0</div>
+  <div class="num-btn" onclick="enterPin('X')" style="font-size:16px;">DEL</div>
+ </div>
 </div>
 
 <!-- App -->
 <div id="app">
+ <!-- Base tabbed layer -->
+ <div id="base-layer">
+  <!-- FIX: added overflow:hidden so absolutely-positioned views are clipped to main -->
+  <main style="flex:1;min-height:0;position:relative;overflow:hidden;">
 
-  <!-- Base tabbed layer -->
-  <div id="base-layer">
-    <main style="flex:1;min-height:0;position:relative;">
+   <!-- CONTACTS TAB -->
+   <div id="view-contacts" class="view active">
+    <div class="view-header">
+     <h1>Contacts</h1>
+     <span class="badge" id="connCountBadge">0 Online</span>
+    </div>
+    <div id="reconnectBanners"></div>
+    <div id="contactsList"><p class="empty-state">No contacts yet.<br>Use the Link tab to connect.</p></div>
+   </div>
 
-      <!-- CONTACTS TAB -->
-      <div id="view-contacts" class="view active">
-        <div class="view-header">
-          <h1>Contacts</h1>
-          <span class="badge" id="connCountBadge">0 Online</span>
-        </div>
-        <div id="reconnectBanners"></div>
-        <div id="contactsList"><p class="empty-state">No contacts yet.<br>Use the Link tab to connect.</p></div>
-      </div>
+   <!-- LINK TAB -->
+   <div id="view-link" class="view">
+    <div class="view-header"><h1>Link Peer</h1><span class="badge">Direct P2P</span></div>
+    <div class="card">
+     <h2>Start a Session</h2>
+     <p style="font-size:14px;color:var(--muted);">Generate a secure invite to send to a friend.</p>
+     <button class="btn btn-primary" id="btnCreateInvite" onclick="createInvite()">Generate Invite</button>
+     <div id="inviteBlock" class="hidden" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="label">Your Invite Code</div>
+      <div class="code-box" id="inviteCodeBox"></div>
+      <button class="btn" onclick="copyBox('inviteCodeBox')">Copy Invite</button>
+      <div class="label" style="margin-top:4px;">Paste their Reply Code</div>
+      <textarea class="textarea" id="replyInput" placeholder="Paste reply code here..."></textarea>
+      <button class="btn btn-success" id="btnFinalize" onclick="finalizeInvite()">Connect</button>
+     </div>
+    </div>
+    <div class="card">
+     <h2>Join a Session</h2>
+     <p style="font-size:14px;color:var(--muted);">Paste an invite code you received.</p>
+     <textarea class="textarea" id="inviteInput" placeholder="Paste invite code here..."></textarea>
+     <button class="btn btn-primary" id="btnAcceptInvite" onclick="acceptInvite()">Generate Reply</button>
+     <div id="answerBlock" class="hidden" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="label">Reply Code (Send this back)</div>
+      <div class="code-box" id="answerCodeBox"></div>
+      <button class="btn" onclick="copyBox('answerCodeBox')">Copy Reply</button>
+      <p id="waitingMsg" style="font-size:14px;color:var(--green);text-align:center;">Waiting for them to connect...</p>
+     </div>
+    </div>
+   </div>
 
-      <!-- LINK TAB -->
-      <div id="view-link" class="view">
-        <div class="view-header"><h1>Link Peer</h1><span class="badge">Direct P2P</span></div>
-        <div class="card">
-          <h2>Start a Session</h2>
-          <p style="font-size:14px;color:var(--muted);">Generate a secure invite to send to a friend.</p>
-          <button class="btn btn-primary" id="btnCreateInvite" onclick="createInvite()">Generate Invite</button>
-          <div id="inviteBlock" class="hidden" style="display:flex;flex-direction:column;gap:14px;">
-            <div class="label">Your Invite Code</div>
-            <div class="code-box" id="inviteCodeBox"></div>
-            <button class="btn" onclick="copyBox('inviteCodeBox')">Copy Invite</button>
-            <div class="label" style="margin-top:4px;">Paste their Reply Code</div>
-            <textarea class="textarea" id="replyInput" placeholder="Paste reply code here..."></textarea>
-            <button class="btn btn-success" id="btnFinalize" onclick="finalizeInvite()">Connect</button>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Join a Session</h2>
-          <p style="font-size:14px;color:var(--muted);">Paste an invite code you received.</p>
-          <textarea class="textarea" id="inviteInput" placeholder="Paste invite code here..."></textarea>
-          <button class="btn btn-primary" id="btnAcceptInvite" onclick="acceptInvite()">Generate Reply</button>
-          <div id="answerBlock" class="hidden" style="display:flex;flex-direction:column;gap:14px;">
-            <div class="label">Reply Code (Send this back)</div>
-            <div class="code-box" id="answerCodeBox"></div>
-            <button class="btn" onclick="copyBox('answerCodeBox')">Copy Reply</button>
-            <p id="waitingMsg" style="font-size:14px;color:var(--green);text-align:center;">Waiting for them to connect...</p>
-          </div>
-        </div>
-      </div>
+   <!-- STATUS TAB -->
+   <div id="view-status" class="view">
+    <div class="view-header"><h1>Broadcasts</h1><span class="badge">Network</span></div>
+    <div class="card">
+     <textarea class="textarea" id="statusInput" placeholder="Write an announcement to all connected peers..."></textarea>
+     <button class="btn btn-primary" onclick="postStatus()">Broadcast</button>
+    </div>
+    <div id="broadcastFeed"><p class="empty-state">No broadcasts yet.</p></div>
+   </div>
 
-      <!-- STATUS TAB -->
-      <div id="view-status" class="view">
-        <div class="view-header"><h1>Broadcasts</h1><span class="badge">Network</span></div>
-        <div class="card">
-          <textarea class="textarea" id="statusInput" placeholder="Write an announcement to all connected peers..."></textarea>
-          <button class="btn btn-primary" onclick="postStatus()">Broadcast</button>
-        </div>
-        <div id="broadcastFeed"><p class="empty-state">No broadcasts yet.</p></div>
+   <!-- SETTINGS TAB -->
+   <div id="view-settings" class="view">
+    <div class="view-header"><h1>Settings</h1></div>
+    <div class="card">
+     <h2>Identity</h2>
+     <div class="label">Nickname</div>
+     <input class="input" id="settingsName" placeholder="Your Nickname" onchange="updateName()">
+     <div class="info-row" style="margin-top:4px;">
+      <span class="info-label">Mesh ID</span>
+      <span style="font-family:monospace;font-size:14px;color:var(--accent);" id="settingsId"></span>
+     </div>
+    </div>
+    <div class="card">
+     <h2>Notifications</h2>
+     <div class="toggle-row">
+      <div>
+       <div style="font-size:16px;font-weight:600;">Push Notifications</div>
+       <div style="font-size:13px;color:var(--muted);margin-top:4px;">Get notified of new messages</div>
       </div>
+      <div class="toggle" id="notifToggle" onclick="toggleNotifications()"><div class="toggle-knob"></div></div>
+     </div>
+    </div>
+    <div class="card">
+     <h2>Data</h2>
+     <button class="btn" onclick="exportIdentity()">Export Identity Backup</button>
+     <button class="btn" onclick="toggleImport()">Import Identity Backup</button>
+     <div id="importBlock" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
+      <textarea class="textarea" id="importDataInput" placeholder="Paste backup data here..." style="min-height:80px;font-size:13px;font-family:monospace;"></textarea>
+      <button class="btn btn-success" onclick="importIdentity()">Restore Backup</button>
+     </div>
+    </div>
+    <div class="card">
+     <h2>Security</h2>
+     <button class="btn" onclick="togglePinSetup()" id="pinSetupBtn">Set App PIN</button>
+     <div id="pinSetupBlock" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
+      <input type="password" pattern="[0-9]*" inputmode="numeric" class="input" id="pinInput" placeholder="Enter 4-digit PIN" maxlength="4">
+      <div style="display:flex;gap:12px;">
+       <button class="btn btn-primary" style="flex:1;" onclick="savePin()">Save</button>
+       <button class="btn btn-danger" style="flex:1;" onclick="removePin()">Remove</button>
+      </div>
+     </div>
+     <div class="divider"></div>
+     <button class="btn btn-danger" onclick="nukeApp()">NUKE ALL DATA</button>
+     <p style="font-size:13px;color:var(--red);">Warning: Deletes everything permanently.</p>
+    </div>
+   </div>
 
-      <!-- SETTINGS TAB -->
-      <div id="view-settings" class="view">
-        <div class="view-header"><h1>Settings</h1></div>
-        <div class="card">
-          <h2>Identity</h2>
-          <div class="label">Nickname</div>
-          <input class="input" id="settingsName" placeholder="Your Nickname" onchange="updateName()">
-          <div class="info-row" style="margin-top:4px;">
-            <span class="info-label">Mesh ID</span>
-            <span style="font-family:monospace;font-size:14px;color:var(--accent);" id="settingsId"></span>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Notifications</h2>
-          <div class="toggle-row">
-            <div>
-              <div style="font-size:16px;font-weight:600;">Push Notifications</div>
-              <div style="font-size:13px;color:var(--muted);margin-top:4px;">Get notified of new messages</div>
-            </div>
-            <div class="toggle" id="notifToggle" onclick="toggleNotifications()"><div class="toggle-knob"></div></div>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Data</h2>
-          <button class="btn" onclick="exportIdentity()">Export Identity Backup</button>
-          <button class="btn" onclick="toggleImport()">Import Identity Backup</button>
-          <div id="importBlock" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
-            <textarea class="textarea" id="importDataInput" placeholder="Paste backup data here..." style="min-height:80px;font-size:13px;font-family:monospace;"></textarea>
-            <button class="btn btn-success" onclick="importIdentity()">Restore Backup</button>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Security</h2>
-          <button class="btn" onclick="togglePinSetup()" id="pinSetupBtn">Set App PIN</button>
-          <div id="pinSetupBlock" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
-            <input type="password" pattern="[0-9]*" inputmode="numeric" class="input" id="pinInput" placeholder="Enter 4-digit PIN" maxlength="4">
-            <div style="display:flex;gap:12px;">
-              <button class="btn btn-primary" style="flex:1;" onclick="savePin()">Save</button>
-              <button class="btn btn-danger" style="flex:1;" onclick="removePin()">Remove</button>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <button class="btn btn-danger" onclick="nukeApp()">NUKE ALL DATA</button>
-          <p style="font-size:13px;color:var(--red);">Warning: Deletes everything permanently.</p>
-        </div>
-      </div>
+  </main>
 
-    </main>
+  <!-- Bottom Nav -->
+  <nav id="bottomNav">
+   <div class="nav-item active" data-tab="view-contacts" onclick="switchTab('view-contacts')">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    <span>Contacts</span>
+   </div>
+   <div class="nav-item" data-tab="view-link" onclick="switchTab('view-link')">
+    <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+    <span>Link</span>
+   </div>
+   <div class="nav-item" data-tab="view-status" onclick="switchTab('view-status')">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-7.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <span>Status</span>
+   </div>
+   <div class="nav-item" data-tab="view-settings" onclick="switchTab('view-settings')">
+    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    <span>Settings</span>
+   </div>
+  </nav>
+ </div>
 
-    <!-- Bottom Nav -->
-    <nav id="bottomNav">
-      <div class="nav-item active" data-tab="view-contacts" onclick="switchTab('view-contacts')">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        <span>Contacts</span>
-              </div>
-      <div class="nav-item" data-tab="view-link" onclick="switchTab('view-link')">
-        <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
-        <span>Link</span>
-      </div>
-      <div class="nav-item" data-tab="view-status" onclick="switchTab('view-status')">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-7.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-        <span>Status</span>
-      </div>
-      <div class="nav-item" data-tab="view-settings" onclick="switchTab('view-settings')">
-        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-        <span>Settings</span>
-      </div>
-    </nav>
+ <!-- CHAT SCREEN -->
+ <div class="screen" id="screen-chat">
+  <div class="chat-header">
+   <div class="chat-header-left">
+    <div class="status-dot" id="chatLiveDot"></div>
+    <div>
+     <h3 id="chatPeerName">Chat</h3>
+     <p id="chatPeerSub"></p>
+    </div>
+   </div>
+   <button class="back-btn" onclick="closeChat()">&#8592; Back</button>
   </div>
-
-  <!-- CHAT SCREEN — slides over everything, no bottom nav -->
-  <div class="screen" id="screen-chat">
-    <div class="chat-header">
-      <div class="chat-header-left">
-        <div class="status-dot" id="chatLiveDot"></div>
-        <div>
-          <h3 id="chatPeerName">Chat</h3>
-          <p id="chatPeerSub"></p>
-        </div>
-      </div>
-      <button class="back-btn" onclick="closeChat()">&#8592; Back</button>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="recording-bar" id="recordingBar">
-      <div class="rec-dot"></div>
-      <div class="rec-timer" id="recTimer">0:00</div>
-      <button class="rec-cancel" onclick="cancelRecording()">Cancel</button>
-      <button class="rec-send" onclick="sendRecording()">Send</button>
-    </div>
-    <div class="chat-composer" id="chatComposer">
-      <input type="text" id="chatInput" placeholder="Message..." autocomplete="off">
-      <button class="composer-btn" onclick="triggerFileInput()" title="Send file">
-        <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-      </button>
-      <button class="composer-btn" id="micBtn" onclick="startRecording()" title="Voice message">
-        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-      </button>
-      <button class="composer-btn send" onclick="sendChat()">
-        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-      </button>
-    </div>
-    <input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="recording-bar" id="recordingBar">
+   <div class="rec-dot"></div>
+   <div class="rec-timer" id="recTimer">0:00</div>
+   <button class="rec-cancel" onclick="cancelRecording()">Cancel</button>
+   <button class="rec-send" onclick="sendRecording()">Send</button>
   </div>
-
-  <!-- CONTACT INFO SCREEN — slides over base layer -->
-  <div class="screen" id="screen-contact-info">
-    <div class="screen-header">
-      <button class="back-btn" onclick="closeScreen('screen-contact-info')">&#8592; Back</button>
-      <h2 id="infoName">Contact</h2>
-    </div>
-    <div class="screen-body" style="gap:18px;">
-
-      <!-- Avatar + name -->
-      <div style="text-align:center;padding:10px 0 6px;">
-        <div class="contact-avatar" id="infoAvatar">?</div>
-        <div style="font-size:20px;font-weight:800;margin-top:8px;" id="infoNameBig"></div>
-        <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="infoStatusLine"></div>
-      </div>
-
-      <!-- Info rows -->
-      <div class="card" style="gap:0;padding:0 20px;">
-        <div class="info-row">
-          <span class="info-label">Mesh ID</span>
-          <span class="info-value" id="infoId" style="font-family:monospace;color:var(--accent);"></span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Status</span>
-          <span class="info-value" id="infoLive"></span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Messages</span>
-          <span class="info-value" id="infoMsgCount"></span>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <button class="btn btn-primary" onclick="openChatFromInfo()">Open Chat</button>
-
-      <!-- Reconnect section -->
-      <div class="card" id="reconnectCard" style="gap:14px;">
-        <h2>Reconnect</h2>
-        <p style="font-size:14px;color:var(--muted);">Generate a fresh invite pre-linked to this contact. Send it through any channel — they tap Accept inside the app.</p>
-        <button class="btn" id="btnReconnect" onclick="generateReconnectOffer()">Generate Reconnect Link</button>
-        <div id="reconnectBlock" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
-          <div class="label">Reconnect Code (Send this)</div>
-          <div class="code-box" id="reconnectCodeBox"></div>
-          <button class="btn" onclick="copyBox('reconnectCodeBox')">Copy Code</button>
-          <p style="font-size:13px;color:var(--muted);text-align:center;">When they accept, connection restores automatically.</p>
-        </div>
-      </div>
-
-      <!-- Danger zone -->
-      <div class="card" style="gap:12px;">
-        <h2>Danger Zone</h2>
-        <button class="btn btn-danger" onclick="deleteContact()">Delete Contact</button>
-        <p style="font-size:13px;color:var(--red);">Removes contact and all chat history. Cannot be undone.</p>
-      </div>
-
-    </div>
+  <div class="chat-composer" id="chatComposer">
+   <input type="text" id="chatInput" placeholder="Message..." autocomplete="off">
+   <button class="composer-btn" onclick="triggerFileInput()" title="Send file">
+    <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+   </button>
+   <button class="composer-btn" id="micBtn" onclick="startRecording()" title="Voice message">
+    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+   </button>
+   <button class="composer-btn send" onclick="sendChat()">
+    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+   </button>
   </div>
+  <input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(event)">
+ </div>
 
+ <!-- CONTACT INFO SCREEN -->
+ <div class="screen" id="screen-contact-info">
+  <div class="screen-header">
+   <button class="back-btn" onclick="closeScreen('screen-contact-info')">&#8592; Back</button>
+   <h2 id="infoName">Contact</h2>
+  </div>
+  <div class="screen-body" style="gap:18px;">
+   <div style="text-align:center;padding:10px 0 6px;">
+    <div class="contact-avatar" id="infoAvatar">?</div>
+    <div style="font-size:20px;font-weight:800;margin-top:8px;" id="infoNameBig"></div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="infoStatusLine"></div>
+   </div>
+   <div class="card" style="gap:0;padding:0 20px;">
+    <div class="info-row">
+     <span class="info-label">Mesh ID</span>
+     <span class="info-value" id="infoId" style="font-family:monospace;color:var(--accent);"></span>
+    </div>
+    <div class="info-row">
+     <span class="info-label">Status</span>
+     <span class="info-value" id="infoLive"></span>
+    </div>
+    <div class="info-row">
+     <span class="info-label">Messages</span>
+     <span class="info-value" id="infoMsgCount"></span>
+    </div>
+   </div>
+   <button class="btn btn-primary" onclick="openChatFromInfo()">Open Chat</button>
+   <div class="card" id="reconnectCard" style="gap:14px;">
+    <h2>Reconnect</h2>
+    <p style="font-size:14px;color:var(--muted);">Generate a fresh invite pre-linked to this contact. Send it through any channel — they tap Accept inside the app.</p>
+    <button class="btn" id="btnReconnect" onclick="generateReconnectOffer()">Generate Reconnect Link</button>
+    <div id="reconnectBlock" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
+     <div class="label">Reconnect Code (Send this)</div>
+     <div class="code-box" id="reconnectCodeBox"></div>
+     <button class="btn" onclick="copyBox('reconnectCodeBox')">Copy Code</button>
+     <p style="font-size:13px;color:var(--muted);text-align:center;">When they accept, connection restores automatically.</p>
+    </div>
+   </div>
+   <div class="card" style="gap:12px;">
+    <h2>Danger Zone</h2>
+    <button class="btn btn-danger" onclick="deleteContact()">Delete Contact</button>
+    <p style="font-size:13px;color:var(--red);">Removes contact and all chat history. Cannot be undone.</p>
+   </div>
+  </div>
+ </div>
 </div><!-- end #app -->
 
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
 'use strict';
-
 const te = new TextEncoder(), td = new TextDecoder();
 const LOCAL_KEY = 'meshcore_v4';
 const CHUNK_SIZE = 16384;
@@ -441,1392 +445,1150 @@ function $(id){ return document.getElementById(id); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
 function stamp(){ return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
 function ab2b64(buf){
-  let s='',u=new Uint8Array(buf),step=0x8000;
-  for(let i=0;i<u.length;i+=step) s+=String.fromCharCode(...u.subarray(i,i+step));
-  return btoa(s);
+ let s='',u=new Uint8Array(buf),step=0x8000;
+ for(let i=0;i<u.length;i+=step) s+=String.fromCharCode(...u.subarray(i,i+step));
+ return btoa(s);
 }
 function b642ab(b64){
-  let bin=atob(b64),u=new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-  return u.buffer;
+ let bin=atob(b64),u=new Uint8Array(bin.length);
+ for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+ return u.buffer;
 }
 async function sha256Hex(ab){
-  let h=await crypto.subtle.digest('SHA-256',ab);
-  return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ let h=await crypto.subtle.digest('SHA-256',ab);
+ return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
 function shortId(fp){ return fp.slice(0,8).toUpperCase(); }
 function fmtDur(s){ return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 function fmtSize(b){
-  if(b<1024) return b+' B';
-  if(b<1048576) return (b/1024).toFixed(1)+' KB';
-  return (b/1048576).toFixed(1)+' MB';
+ if(b<1024) return b+' B';
+ if(b<1048576) return (b/1024).toFixed(1)+' KB';
+ return (b/1048576).toFixed(1)+' MB';
 }
 function initials(nick){ return (nick||'?').slice(0,2).toUpperCase(); }
-
 function toast(msg, type){
-  const w=$('toastWrap');
-  const t=document.createElement('div');
-  t.className='toast'+(type==='ok'?' ok':type==='err'?' err':'');
-  t.textContent=msg;
-  w.appendChild(t);
-  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); },2800);
+ const w=$('toastWrap');
+ const t=document.createElement('div');
+ t.className='toast'+(type==='ok'?' ok':type==='err'?' err':'');
+ t.textContent=msg;
+ w.appendChild(t);
+ setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); },2800);
 }
 
 /* ── PWA ── */
 (function setupPWA(){
-  const svg=$('logo-svg').outerHTML.replace('class="hidden"','');
-  const manifest={name:'MeshCore',short_name:'Mesh',display:'standalone',background_color:'#09111a',theme_color:'#121e2d',
-    icons:[{src:'data:image/svg+xml;base64,'+btoa(svg),sizes:'192x192 512x512',type:'image/svg+xml'}]};
-  const mb=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
-  document.head.insertAdjacentHTML('beforeend',`<link rel="manifest" href="${URL.createObjectURL(mb)}">`);
-  const sw=`self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;
-  const sb=new Blob([sw],{type:'application/javascript'});
-  if('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(sb)).catch(()=>{});
+ const svg=$('logo-svg').outerHTML.replace('class="hidden"','');
+ const manifest={name:'MeshCore',short_name:'Mesh',display:'standalone',background_color:'#09111a',theme_color:'#121e2d',
+  icons:[{src:'data:image/svg+xml;base64,'+btoa(svg),sizes:'192x192 512x512',type:'image/svg+xml'}]};
+ const mb=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+ document.head.insertAdjacentHTML('beforeend',`<link rel="manifest" href="${URL.createObjectURL(mb)}">`);
+ const sw=`self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;
+ const sb=new Blob([sw],{type:'application/javascript'});
+ if('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(sb)).catch(()=>{});
 })();
 
 /* ── State ── */
 let state = {
-  me:{ nickname:'User', id:'', fp:'', spkiB64:'', pkcs8B64:'', keyPair:null },
-  contacts:{},
-  chats:{},
-  broadcasts:[],
-  pin:null,
-  notificationsEnabled:false
+ me:{ nickname:'User', id:'', fp:'', spkiB64:'', pkcs8B64:'', keyPair:null },
+ contacts:{},
+ chats:{},
+ broadcasts:[],
+ pin:null,
+ notificationsEnabled:false
 };
-
 const net = {
-  conns:{},
-  pendingOffer:null,
-  pendingReconnect:{},   // peerId -> {pc, dc}
-  fileTransfers:{},
-  mediaRecorder:null,
-  recordingChunks:[],
-  recordingSeconds:0,
-  recordingTimer:null,
-  saveTimer:null,
-  healthTimer:null
+ conns:{},
+ pendingOffer:null,
+ pendingReconnect:{},
+ fileTransfers:{},
+ mediaRecorder:null,
+ recordingChunks:[],
+ recordingSeconds:0,
+ recordingTimer:null,
+ saveTimer:null,
+ healthTimer:null
 };
-
-let activeChat = null;        // peerId currently open in chat screen
-let infoContactId = null;     // peerId open in contact info screen
+let activeChat = null;
+let infoContactId = null;
 
 /* ── Persistence ── */
 function saveState(){
-  const dump={
-    me:{ nickname:state.me.nickname, spkiB64:state.me.spkiB64, pkcs8B64:state.me.pkcs8B64 },
-    contacts:state.contacts,
-    chats:{},
-    broadcasts:state.broadcasts.slice(-50),
-    pin:state.pin,
-    notificationsEnabled:state.notificationsEnabled
-  };
-
-    // only save text messages, skip large binary blobs
-  for(const [pid, msgs] of Object.entries(state.chats)){
-    dump.chats[pid] = msgs.filter(m=>m.type!=='file'&&m.type!=='voice').slice(-200);
-  }
-  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(dump)); }
-  catch(e){ console.warn('saveState failed',e); }
+ const dump={
+  me:{ nickname:state.me.nickname, spkiB64:state.me.spkiB64, pkcs8B64:state.me.pkcs8B64 },
+  contacts:state.contacts,
+  chats:{},
+  broadcasts:state.broadcasts.slice(-50),
+  pin:state.pin,
+  notificationsEnabled:state.notificationsEnabled
+ };
+ for(const [pid, msgs] of Object.entries(state.chats)){
+  dump.chats[pid] = msgs.filter(m=>m.type!=='file'&&m.type!=='voice').slice(-200);
+ }
+ try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(dump)); }
+ catch(e){ console.warn('saveState failed',e); }
 }
-
 function scheduleSave(){
-  clearTimeout(net.saveTimer);
-  net.saveTimer = setTimeout(saveState, 800);
+ clearTimeout(net.saveTimer);
+ net.saveTimer = setTimeout(saveState, 800);
 }
-
 async function loadState(){
-  try{
-    const raw = localStorage.getItem(LOCAL_KEY);
-    if(!raw) return false;
-    const dump = JSON.parse(raw);
-    state.contacts = dump.contacts || {};
-    state.chats = dump.chats || {};
-    state.broadcasts = dump.broadcasts || [];
-    state.pin = dump.pin || null;
-    state.notificationsEnabled = dump.notificationsEnabled || false;
-    if(dump.me && dump.me.spkiB64 && dump.me.pkcs8B64){
-      state.me.nickname = dump.me.nickname || 'User';
-      state.me.spkiB64 = dump.me.spkiB64;
-      state.me.pkcs8B64 = dump.me.pkcs8B64;
-      const spki = b642ab(dump.me.spkiB64);
-      const pkcs8 = b642ab(dump.me.pkcs8B64);
-      const pub = await crypto.subtle.importKey('spki', spki, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['encrypt']);
-      const priv = await crypto.subtle.importKey('pkcs8', pkcs8, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['decrypt']);
-      state.me.keyPair = {publicKey:pub, privateKey:priv};
-      const fp = await sha256Hex(spki);
-      state.me.fp = fp;
-      state.me.id = shortId(fp);
-      return true;
-    }
-  } catch(e){ console.warn('loadState failed',e); }
-  return false;
+ try{
+  const raw = localStorage.getItem(LOCAL_KEY);
+  if(!raw) return false;
+  const dump = JSON.parse(raw);
+  state.contacts = dump.contacts || {};
+  state.chats = dump.chats || {};
+  state.broadcasts = dump.broadcasts || [];
+  state.pin = dump.pin || null;
+  state.notificationsEnabled = dump.notificationsEnabled || false;
+  if(dump.me && dump.me.spkiB64 && dump.me.pkcs8B64){
+   state.me.nickname = dump.me.nickname || 'User';
+   state.me.spkiB64 = dump.me.spkiB64;
+   state.me.pkcs8B64 = dump.me.pkcs8B64;
+   const spki = b642ab(dump.me.spkiB64);
+   const pkcs8 = b642ab(dump.me.pkcs8B64);
+   const pub = await crypto.subtle.importKey('spki', spki, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['encrypt']);
+   const priv = await crypto.subtle.importKey('pkcs8', pkcs8, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['decrypt']);
+   state.me.keyPair = {publicKey:pub, privateKey:priv};
+   const fp = await sha256Hex(spki);
+   state.me.fp = fp;
+   state.me.id = shortId(fp);
+   return true;
+  }
+ } catch(e){ console.warn('loadState failed',e); }
+ return false;
 }
 
 /* ── Crypto identity ── */
 async function generateIdentity(){
-  const kp = await crypto.subtle.generateKey({name:'RSA-OAEP',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['encrypt','decrypt']);
-  const spki = await crypto.subtle.exportKey('spki', kp.publicKey);
-  const pkcs8 = await crypto.subtle.exportKey('pkcs8', kp.privateKey);
-  const fp = await sha256Hex(spki);
-  state.me.keyPair = kp;
-  state.me.spkiB64 = ab2b64(spki);
-  state.me.pkcs8B64 = ab2b64(pkcs8);
-  state.me.fp = fp;
-  state.me.id = shortId(fp);
+ const kp = await crypto.subtle.generateKey({name:'RSA-OAEP',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['encrypt','decrypt']);
+ const spki = await crypto.subtle.exportKey('spki', kp.publicKey);
+ const pkcs8 = await crypto.subtle.exportKey('pkcs8', kp.privateKey);
+ const fp = await sha256Hex(spki);
+ state.me.keyPair = kp;
+ state.me.spkiB64 = ab2b64(spki);
+ state.me.pkcs8B64 = ab2b64(pkcs8);
+ state.me.fp = fp;
+ state.me.id = shortId(fp);
 }
-
 async function encryptPayload(plainObj, recipientSpkiB64){
-  const plain = te.encode(JSON.stringify(plainObj));
-  const aesKey = await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = await crypto.subtle.encrypt({name:'AES-GCM',iv}, aesKey, plain);
-  const rawAes = await crypto.subtle.exportKey('raw', aesKey);
-  const recipientPub = await crypto.subtle.importKey('spki', b642ab(recipientSpkiB64), {name:'RSA-OAEP',hash:'SHA-256'}, false, ['encrypt']);
-  const encKey = await crypto.subtle.encrypt({name:'RSA-OAEP'}, recipientPub, rawAes);
-  return { iv: ab2b64(iv), ct: ab2b64(ct), key: ab2b64(encKey) };
+ const plain = te.encode(JSON.stringify(plainObj));
+ const aesKey = await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+ const iv = crypto.getRandomValues(new Uint8Array(12));
+ const ct = await crypto.subtle.encrypt({name:'AES-GCM',iv}, aesKey, plain);
+ const rawAes = await crypto.subtle.exportKey('raw', aesKey);
+ const recipientPub = await crypto.subtle.importKey('spki', b642ab(recipientSpkiB64), {name:'RSA-OAEP',hash:'SHA-256'}, false, ['encrypt']);
+ const encKey = await crypto.subtle.encrypt({name:'RSA-OAEP'}, recipientPub, rawAes);
+ return { iv: ab2b64(iv), ct: ab2b64(ct), key: ab2b64(encKey) };
 }
-
 async function decryptPayload(enc){
-  const rawAes = await crypto.subtle.decrypt({name:'RSA-OAEP'}, state.me.keyPair.privateKey, b642ab(enc.key));
-  const aesKey = await crypto.subtle.importKey('raw', rawAes, {name:'AES-GCM',length:256}, false, ['decrypt']);
-  const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:b642ab(enc.iv)}, aesKey, b642ab(enc.ct));
-  return JSON.parse(td.decode(plain));
+ const rawAes = await crypto.subtle.decrypt({name:'RSA-OAEP'}, state.me.keyPair.privateKey, b642ab(enc.key));
+ const aesKey = await crypto.subtle.importKey('raw', rawAes, {name:'AES-GCM',length:256}, false, ['decrypt']);
+ const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:b642ab(enc.iv)}, aesKey, b642ab(enc.ct));
+ return JSON.parse(td.decode(plain));
 }
 
 /* ── WebRTC helpers ── */
 const ICE = { iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}] };
-
 function createPC(){
-  const pc = new RTCPeerConnection(ICE);
-  pc._iceDone = new Promise(res=>{ let done=false;
-    pc.onicecandidate = e=>{ if(!e.candidate&&!done){ done=true; res(); } };
-    pc.onicegatheringstatechange = ()=>{ if(pc.iceGatheringState==='complete'&&!done){ done=true; res(); } };
-    setTimeout(()=>{ if(!done){ done=true; res(); } }, 6000);
-  });
-  return pc;
+ const pc = new RTCPeerConnection(ICE);
+ pc._iceDone = new Promise(res=>{ let done=false;
+  pc.onicecandidate = e=>{ if(!e.candidate&&!done){ done=true; res(); } };
+  pc.onicegatheringstatechange = ()=>{ if(pc.iceGatheringState==='complete'&&!done){ done=true; res(); } };
+  setTimeout(()=>{ if(!done){ done=true; res(); } }, 6000);
+ });
+ return pc;
 }
-
 function wireDataChannel(dc, peerId){
-  dc.binaryType = 'arraybuffer';
+ dc.binaryType = 'arraybuffer';
+ net.conns[peerId] = net.conns[peerId] || {};
+ net.conns[peerId].dc = dc;
+ net.conns[peerId].status = 'connecting';
+ dc.onopen = ()=>{
+  net.conns[peerId].status = 'open';
+  dcSend(peerId, {type:'hello', nickname:state.me.nickname, meshId:state.me.id, spkiB64:state.me.spkiB64});
+  setContactOnline(peerId, true);
+  renderContacts();
+  if(net.pendingReconnect[peerId]) delete net.pendingReconnect[peerId];
+  toast(((state.contacts[peerId]||{}).nickname||'Peer')+' connected', 'ok');
+ };
+ dc.onclose = ()=>{
   net.conns[peerId] = net.conns[peerId] || {};
-  net.conns[peerId].dc = dc;
-  net.conns[peerId].status = 'connecting';
-
-  dc.onopen = ()=>{
-    net.conns[peerId].status = 'open';
-    // send our identity hello
-    dcSend(peerId, {type:'hello', nickname:state.me.nickname, meshId:state.me.id, spkiB64:state.me.spkiB64});
-    setContactOnline(peerId, true);
-    renderContacts();
-    // if this was a reconnect, clean up pending
-    if(net.pendingReconnect[peerId]) delete net.pendingReconnect[peerId];
-    toast(((state.contacts[peerId]||{}).nickname||'Peer')+' connected', 'ok');
-  };
-
-  dc.onclose = ()=>{
-    net.conns[peerId] = net.conns[peerId] || {};
-    net.conns[peerId].status = 'closed';
-    setContactOnline(peerId, false);
-    renderContacts();
-    updateChatHeader();
-    toast(((state.contacts[peerId]||{}).nickname||'Peer')+' disconnected');
-  };
-
-  dc.onerror = ()=>{
-    net.conns[peerId] = net.conns[peerId] || {};
-    net.conns[peerId].status = 'error';
-    setContactOnline(peerId, false);
-    renderContacts();
-    updateChatHeader();
-  };
-
-  dc.onmessage = e=>{ handleDCMessage(peerId, e.data); };
+  net.conns[peerId].status = 'closed';
+  setContactOnline(peerId, false);
+  renderContacts();
+  updateChatHeader();
+  toast(((state.contacts[peerId]||{}).nickname||'Peer')+' disconnected');
+ };
+ dc.onerror = ()=>{
+  net.conns[peerId] = net.conns[peerId] || {};
+  net.conns[peerId].status = 'error';
+  setContactOnline(peerId, false);
+  renderContacts();
+  updateChatHeader();
+ };
+ dc.onmessage = e=>{ handleDCMessage(peerId, e.data); };
 }
-
 function dcSend(peerId, obj){
-  const conn = net.conns[peerId];
-  if(conn && conn.dc && conn.dc.readyState==='open'){
-    try{ conn.dc.send(JSON.stringify(obj)); return true; }
-    catch(e){ return false; }
-  }
-  return false;
+ const conn = net.conns[peerId];
+ if(conn && conn.dc && conn.dc.readyState==='open'){
+  try{ conn.dc.send(JSON.stringify(obj)); return true; }
+  catch(e){ return false; }
+ }
+ return false;
 }
-
 function setContactOnline(peerId, online){
-  if(state.contacts[peerId]){
-    state.contacts[peerId].online = online;
-    if(online) state.contacts[peerId].lastSeen = Date.now();
-    scheduleSave();
-  }
+ if(state.contacts[peerId]){
+  state.contacts[peerId].online = online;
+  if(online) state.contacts[peerId].lastSeen = Date.now();
+  scheduleSave();
+ }
 }
 
 /* ── Connection health polling ── */
 function startHealthPolling(){
-  clearInterval(net.healthTimer);
-  net.healthTimer = setInterval(()=>{
-    for(const [pid, conn] of Object.entries(net.conns)){
-      if(!conn.pc) continue;
-      const state_ = conn.pc.connectionState || conn.pc.iceConnectionState;
-      if(state_==='failed'||state_==='disconnected'||state_==='closed'){
-        if((state.contacts[pid]||{}).online){
-          setContactOnline(pid, false);
-          renderContacts();
-          updateChatHeader();
-        }
-      }
+ clearInterval(net.healthTimer);
+ net.healthTimer = setInterval(()=>{
+  for(const [pid, conn] of Object.entries(net.conns)){
+   if(!conn.pc) continue;
+   const state_ = conn.pc.connectionState || conn.pc.iceConnectionState;
+   if(state_==='failed'||state_==='disconnected'||state_==='closed'){
+    if((state.contacts[pid]||{}).online){
+     setContactOnline(pid, false);
+     renderContacts();
+     updateChatHeader();
     }
-    updateConnBadge();
-  }, 4000);
+   }
+  }
+  updateConnBadge();
+ }, 4000);
 }
 
 /* ── DC message handler ── */
 function handleDCMessage(peerId, raw){
-  // binary = file chunk
-  if(raw instanceof ArrayBuffer){
-    handleFileChunk(peerId, raw);
-    return;
-  }
-  let msg;
-  try{ msg = JSON.parse(raw); } catch{ return; }
-
-  switch(msg.type){
-    case 'hello':
-      handleHello(peerId, msg);
-      break;
-    case 'chat':
-      handleIncomingChat(peerId, msg);
-      break;
-    case 'voice':
-      handleIncomingVoice(peerId, msg);
-      break;
-    case 'file_meta':
-      handleFileMeta(peerId, msg);
-      break;
-    case 'broadcast':
-      handleIncomingBroadcast(peerId, msg);
-      break;
-    case 'reconnect_offer':
-      handleReconnectOffer(peerId, msg);
-      break;
-    case 'delivered':
-      markDelivered(peerId, msg.msgId);
-      break;
-  }
+ if(raw instanceof ArrayBuffer){ handleFileChunk(peerId, raw); return; }
+ let msg;
+ try{ msg = JSON.parse(raw); } catch{ return; }
+ switch(msg.type){
+  case 'hello': handleHello(peerId, msg); break;
+  case 'chat': handleIncomingChat(peerId, msg); break;
+  case 'voice': handleIncomingVoice(peerId, msg); break;
+  case 'file_meta': handleFileMeta(peerId, msg); break;
+  case 'broadcast': handleIncomingBroadcast(peerId, msg); break;
+  case 'reconnect_offer': handleReconnectOffer(peerId, msg); break;
+  case 'delivered': markDelivered(peerId, msg.msgId); break;
+ }
 }
-
 function handleHello(peerId, msg){
-  const isNew = !state.contacts[peerId];
-  if(!state.contacts[peerId]){
-    state.contacts[peerId] = { nickname: msg.nickname, meshId: msg.meshId, spkiB64: msg.spkiB64, online: true, lastSeen: Date.now() };
-  } else {
-    state.contacts[peerId].nickname = msg.nickname;
-    state.contacts[peerId].spkiB64 = msg.spkiB64;
-    state.contacts[peerId].online = true;
-    state.contacts[peerId].lastSeen = Date.now();
-  }
-  if(!state.chats[peerId]) state.chats[peerId] = [];
-  scheduleSave();
-  renderContacts();
-  updateConnBadge();
-  if(isNew) toast('New contact: '+msg.nickname, 'ok');
-  // if chat is open for this peer, update header
-  if(activeChat===peerId) updateChatHeader();
+ const isNew = !state.contacts[peerId];
+ if(!state.contacts[peerId]){
+  state.contacts[peerId] = { nickname: msg.nickname, meshId: msg.meshId, spkiB64: msg.spkiB64, online: true, lastSeen: Date.now() };
+ } else {
+  state.contacts[peerId].nickname = msg.nickname;
+  state.contacts[peerId].spkiB64 = msg.spkiB64;
+  state.contacts[peerId].online = true;
+  state.contacts[peerId].lastSeen = Date.now();
+ }
+ if(!state.chats[peerId]) state.chats[peerId] = [];
+ scheduleSave();
+ renderContacts();
+ updateConnBadge();
+ if(isNew) toast('New contact: '+msg.nickname, 'ok');
+ if(activeChat===peerId) updateChatHeader();
 }
-
 function handleIncomingChat(peerId, msg){
-  const contact = state.contacts[peerId];
-  if(!state.chats[peerId]) state.chats[peerId] = [];
-  const entry = { id: msg.id||Date.now()+'', type:'text', from:'peer', text: msg.text, time: stamp() };
-  state.chats[peerId].push(entry);
-  scheduleSave();
-  // ack delivery
-  dcSend(peerId, {type:'delivered', msgId: entry.id});
-  if(activeChat===peerId){
-    appendMessage(entry, peerId);
-    scrollChatBottom();
-  } else {
-    // unread badge
-    state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
-    renderContacts();
-    notifyUser(contact ? contact.nickname : 'Peer', msg.text);
-  }
+ const contact = state.contacts[peerId];
+ if(!state.chats[peerId]) state.chats[peerId] = [];
+ const entry = { id: msg.id||Date.now()+'', type:'text', from:'peer', text: msg.text, time: stamp() };
+ state.chats[peerId].push(entry);
+ scheduleSave();
+ dcSend(peerId, {type:'delivered', msgId: entry.id});
+ if(activeChat===peerId){
+  appendMessage(entry, peerId);
+  scrollChatBottom();
+ } else {
+  state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
+  renderContacts();
+  notifyUser(contact ? contact.nickname : 'Peer', msg.text);
+ }
 }
-
 function handleIncomingVoice(peerId, msg){
-  if(!state.chats[peerId]) state.chats[peerId] = [];
-  const entry = { id: msg.id||Date.now()+'', type:'voice', from:'peer', b64: msg.b64, duration: msg.duration, time: stamp() };
-  state.chats[peerId].push(entry);
-  scheduleSave();
-  if(activeChat===peerId){
-    appendMessage(entry, peerId);
-    scrollChatBottom();
-  } else {
-    state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
-    renderContacts();
-  }
+ if(!state.chats[peerId]) state.chats[peerId] = [];
+ const entry = { id: msg.id||Date.now()+'', type:'voice', from:'peer', b64: msg.b64, duration: msg.duration, time: stamp() };
+ state.chats[peerId].push(entry);
+ scheduleSave();
+ if(activeChat===peerId){
+  appendMessage(entry, peerId);
+  scrollChatBottom();
+ } else {
+  state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
+  renderContacts();
+ }
 }
-
 function handleFileMeta(peerId, msg){
-  if(!net.fileTransfers[msg.fileId]){
-    net.fileTransfers[msg.fileId] = { name: msg.name, size: msg.size, mime: msg.mime, chunks:[], received:0, total: msg.total, peerId };
-  }
-  if(!state.chats[peerId]) state.chats[peerId] = [];
-  const entry = { id: msg.fileId, type:'file', from:'peer', name: msg.name, size: msg.size, mime: msg.mime, progress:0, time: stamp() };
-  state.chats[peerId].push(entry);
-  scheduleSave();
-  if(activeChat===peerId){
-    appendMessage(entry, peerId);
-    scrollChatBottom();
-  } else {
-    state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
-    renderContacts();
-  }
+ if(!net.fileTransfers[msg.fileId]){
+  net.fileTransfers[msg.fileId] = { name: msg.name, size: msg.size, mime: msg.mime, chunks:[], received:0, total: msg.total, peerId };
+ }
+ if(!state.chats[peerId]) state.chats[peerId] = [];
+ const entry = { id: msg.fileId, type:'file', from:'peer', name: msg.name, size: msg.size, mime: msg.mime, progress:0, time: stamp() };
+ state.chats[peerId].push(entry);
+ scheduleSave();
+ if(activeChat===peerId){
+  appendMessage(entry, peerId);
+  scrollChatBottom();
+ } else {
+  state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
+  renderContacts();
+ }
 }
-
 function handleFileChunk(peerId, buf){
-  // first 16 bytes = fileId padded
-  const view = new DataView(buf);
-  const idLen = view.getUint8(0);
-  const idBytes = new Uint8Array(buf, 1, idLen);
-  const fileId = td.decode(idBytes);
-  const chunkData = buf.slice(1+idLen);
-  const ft = net.fileTransfers[fileId];
-  if(!ft) return;
-  ft.chunks.push(chunkData);
-  ft.received += chunkData.byteLength;
-  const progress = Math.round((ft.received/ft.size)*100);
-  updateFileProgress(fileId, progress);
-  if(ft.chunks.length >= ft.total){
-    const blob = new Blob(ft.chunks, {type: ft.mime});
-    const url = URL.createObjectURL(blob);
-    finalizeFileMessage(ft.peerId, fileId, url, ft.name, ft.size);
-    delete net.fileTransfers[fileId];
-  }
+ const view = new DataView(buf);
+ const idLen = view.getUint8(0);
+ const idBytes = new Uint8Array(buf, 1, idLen);
+ const fileId = td.decode(idBytes);
+ const chunkData = buf.slice(1+idLen);
+ const ft = net.fileTransfers[fileId];
+ if(!ft) return;
+ ft.chunks.push(chunkData);
+ ft.received += chunkData.byteLength;
+ const progress = Math.round((ft.received/ft.size)*100);
+ updateFileProgress(fileId, progress);
+ if(ft.chunks.length >= ft.total){
+  const blob = new Blob(ft.chunks, {type: ft.mime});
+  const url = URL.createObjectURL(blob);
+  finalizeFileMessage(ft.peerId, fileId, url, ft.name, ft.size);
+  delete net.fileTransfers[fileId];
+ }
 }
-
 function handleIncomingBroadcast(peerId, msg){
-  const contact = state.contacts[peerId];
-  const entry = { from: contact ? contact.nickname : peerId, text: msg.text, time: stamp() };
-  state.broadcasts.unshift(entry);
-  scheduleSave();
-  renderBroadcasts();
+ const contact = state.contacts[peerId];
+ const entry = { from: contact ? contact.nickname : peerId, text: msg.text, time: stamp() };
+ state.broadcasts.unshift(entry);
+ scheduleSave();
+ renderBroadcasts();
 }
 
 /* ── Reconnect offer via data channel ── */
 function handleReconnectOffer(peerId, msg){
-  // another peer sent us a reconnect offer for a THIRD peer
-  // in our pure P2P model, this arrives as a banner
-  showReconnectBanner(msg.targetId, msg.offer, msg.fromNick);
+ showReconnectBanner(msg.targetId, msg.offer, msg.fromNick);
 }
 
 /* ── Reconnect banners ── */
 function showReconnectBanner(targetId, offer, fromNick){
-  const wrap = $('reconnectBanners');
-  const old = document.getElementById('rbanner-'+targetId);
-  if(old) old.remove();
-  const div = document.createElement('div');
-  div.className = 'reconnect-banner';
-  div.id = 'rbanner-'+targetId;
-  div.innerHTML = `
-    <div class="reconnect-banner-text">
-      <strong>${esc(fromNick||targetId)} wants to reconnect</strong>
-      <span>Tap Accept to restore connection</span>
-    </div>
-    <button class="reconnect-accept-btn" onclick="acceptReconnectBanner('${targetId}', this.parentElement)">Accept</button>`;
-  wrap.prepend(div);
-  // store offer for acceptance
-  div._reconnectOffer = offer;
+ const wrap = $('reconnectBanners');
+ const old = document.getElementById('rbanner-'+targetId);
+ if(old) old.remove();
+ const div = document.createElement('div');
+ div.className = 'reconnect-banner';
+ div.id = 'rbanner-'+targetId;
+ div.innerHTML = `
+  <div class="reconnect-banner-text">
+   <strong>${esc(fromNick||targetId)} wants to reconnect</strong>
+   <span>Tap Accept to restore connection</span>
+  </div>
+  <button class="reconnect-accept-btn" onclick="acceptReconnectBanner('${targetId}', this.parentElement)">Accept</button>`;
+ wrap.prepend(div);
+ div._reconnectOffer = offer;
 }
-
 async function acceptReconnectBanner(targetId, bannerEl){
-  const offer = bannerEl._reconnectOffer;
-  if(!offer){ bannerEl.remove(); return; }
-  try{
-        const pc = createPC();
-    const dc = pc.createDataChannel('mesh');
-    net.conns[targetId] = { pc, dc, status:'connecting' };
-    wireDataChannel(dc, targetId);
-
-    await pc.setRemoteDescription({type:'offer', sdp: offer});
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    await pc._iceDone;
-
-    // copy answer to clipboard for user to relay back
-    const answerStr = pc.localDescription.sdp;
-    await navigator.clipboard.writeText(JSON.stringify({
-      type:'reconnect_answer',
-      sdp: answerStr,
-      fromId: state.me.id,
-      fromNick: state.me.nickname,
-      spkiB64: state.me.spkiB64
-    }));
-    bannerEl.remove();
-    toast('Answer copied — send it back to complete reconnect', 'ok');
-  } catch(e){
-    toast('Reconnect failed: '+e.message, 'err');
-  }
+ const offer = bannerEl._reconnectOffer;
+ if(!offer){ bannerEl.remove(); return; }
+ try{
+  const pc = createPC();
+  const dc = pc.createDataChannel('mesh');
+  net.conns[targetId] = { pc, dc, status:'connecting' };
+  wireDataChannel(dc, targetId);
+  await pc.setRemoteDescription({type:'offer', sdp: offer});
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  await pc._iceDone;
+  const answerStr = pc.localDescription.sdp;
+  await navigator.clipboard.writeText(JSON.stringify({
+   type:'reconnect_answer', sdp: answerStr, fromId: state.me.id, fromNick: state.me.nickname, spkiB64: state.me.spkiB64
+  }));
+  bannerEl.remove();
+  toast('Answer copied — send it back to complete reconnect', 'ok');
+ } catch(e){
+  toast('Reconnect failed: '+e.message, 'err');
+ }
 }
 
-/* ── Reconnect offer generation (from contact info screen) ── */
+/* ── Reconnect offer generation ── */
 async function generateReconnectOffer(){
-  if(!infoContactId){ return; }
-  const contact = state.contacts[infoContactId];
-  if(!contact){ return; }
-
-  $('btnReconnect').disabled = true;
-  $('btnReconnect').textContent = 'Generating...';
-
-  try{
-    const pc = createPC();
-    const dc = pc.createDataChannel('mesh');
-    net.pendingReconnect[infoContactId] = { pc, dc };
-
-    // wire up in advance so when they accept it connects automatically
-    wireDataChannel(dc, infoContactId);
-    net.conns[infoContactId] = { pc, dc, status:'pending' };
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    await pc._iceDone;
-
-    const payload = JSON.stringify({
-      type: 'reconnect_offer',
-      sdp: pc.localDescription.sdp,
-      fromId: state.me.id,
-      fromNick: state.me.nickname,
-      spkiB64: state.me.spkiB64,
-      targetMeshId: contact.meshId
-    });
-
-    $('reconnectCodeBox').textContent = payload;
-    $('reconnectBlock').classList.remove('hidden');
-    await navigator.clipboard.writeText(payload);
-    toast('Reconnect code copied', 'ok');
-  } catch(e){
-    toast('Failed to generate: '+e.message, 'err');
-  }
-
-  $('btnReconnect').disabled = false;
-  $('btnReconnect').textContent = 'Generate Reconnect Link';
+ if(!infoContactId) return;
+ const contact = state.contacts[infoContactId];
+ if(!contact) return;
+ $('btnReconnect').disabled = true;
+ $('btnReconnect').textContent = 'Generating...';
+ try{
+  const pc = createPC();
+  const dc = pc.createDataChannel('mesh');
+  net.pendingReconnect[infoContactId] = { pc, dc };
+  wireDataChannel(dc, infoContactId);
+  net.conns[infoContactId] = { pc, dc, status:'pending' };
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await pc._iceDone;
+  const payload = JSON.stringify({
+   type: 'reconnect_offer', sdp: pc.localDescription.sdp, fromId: state.me.id, fromNick: state.me.nickname, spkiB64: state.me.spkiB64, targetMeshId: contact.meshId
+  });
+  $('reconnectCodeBox').textContent = payload;
+  $('reconnectBlock').classList.remove('hidden');
+  await navigator.clipboard.writeText(payload);
+  toast('Reconnect code copied', 'ok');
+ } catch(e){
+  toast('Failed to generate: '+e.message, 'err');
+ }
+ $('btnReconnect').disabled = false;
+ $('btnReconnect').textContent = 'Generate Reconnect Link';
 }
 
 /* ── Accept a reconnect code pasted by user ── */
 async function acceptReconnectCode(raw){
-  let parsed;
-  try{ parsed = JSON.parse(raw); } catch{ toast('Invalid code', 'err'); return; }
-  if(parsed.type !== 'reconnect_offer'){ toast('Not a reconnect code', 'err'); return; }
-
-  const peerId = parsed.fromId;
-  try{
-    const pc = createPC();
-    net.conns[peerId] = { pc, status:'connecting' };
-
-    pc.ondatachannel = e=>{
-      wireDataChannel(e.channel, peerId);
-    };
-
-    await pc.setRemoteDescription({type:'offer', sdp: parsed.sdp});
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    await pc._iceDone;
-
-    const answerPayload = JSON.stringify({
-      type: 'reconnect_answer',
-      sdp: pc.localDescription.sdp,
-      fromId: state.me.id,
-      fromNick: state.me.nickname,
-      spkiB64: state.me.spkiB64
-    });
-
-    // ensure contact exists
-    if(!state.contacts[peerId]){
-      state.contacts[peerId] = {
-        nickname: parsed.fromNick || peerId,
-        meshId: parsed.fromId,
-        spkiB64: parsed.spkiB64,
-        online: false,
-        lastSeen: null
-      };
-    } else {
-      state.contacts[peerId].spkiB64 = parsed.spkiB64;
-    }
-    if(!state.chats[peerId]) state.chats[peerId] = [];
-    scheduleSave();
-
-    await navigator.clipboard.writeText(answerPayload);
-    toast('Reply copied — send it back to complete reconnect', 'ok');
-    renderContacts();
-
-    // show answer in Link tab's answer block so user can re-copy if needed
-    $('answerCodeBox').textContent = answerPayload;
-    $('answerBlock').classList.remove('hidden');
-
-  } catch(e){
-    toast('Failed to accept reconnect: '+e.message, 'err');
+ let parsed;
+ try{ parsed = JSON.parse(raw); } catch{ toast('Invalid code', 'err'); return; }
+ if(parsed.type !== 'reconnect_offer'){ toast('Not a reconnect code', 'err'); return; }
+ const peerId = parsed.fromId;
+ try{
+  const pc = createPC();
+  net.conns[peerId] = { pc, status:'connecting' };
+  pc.ondatachannel = e=>{ wireDataChannel(e.channel, peerId); };
+  await pc.setRemoteDescription({type:'offer', sdp: parsed.sdp});
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  await pc._iceDone;
+  const answerPayload = JSON.stringify({
+   type: 'reconnect_answer', sdp: pc.localDescription.sdp, fromId: state.me.id, fromNick: state.me.nickname, spkiB64: state.me.spkiB64
+  });
+  if(!state.contacts[peerId]){
+   state.contacts[peerId] = { nickname: parsed.fromNick || peerId, meshId: parsed.fromId, spkiB64: parsed.spkiB64, online: false, lastSeen: null };
+  } else {
+   state.contacts[peerId].spkiB64 = parsed.spkiB64;
   }
+  if(!state.chats[peerId]) state.chats[peerId] = [];
+  scheduleSave();
+  await navigator.clipboard.writeText(answerPayload);
+  toast('Reply copied — send it back to complete reconnect', 'ok');
+  renderContacts();
+  $('answerCodeBox').textContent = answerPayload;
+  $('answerBlock').classList.remove('hidden');
+ } catch(e){
+  toast('Failed to accept reconnect: '+e.message, 'err');
+ }
 }
 
-/* ── Finalize reconnect answer (initiator side) ── */
+/* ── Finalize reconnect answer ── */
 async function finalizeReconnectAnswer(raw){
-  let parsed;
-  try{ parsed = JSON.parse(raw); } catch{ toast('Invalid answer', 'err'); return; }
-  if(parsed.type !== 'reconnect_answer'){ toast('Not a reconnect answer', 'err'); return; }
-
-  const peerId = parsed.fromId;
-  const pending = net.pendingReconnect[peerId] || (net.conns[peerId] && net.conns[peerId]);
-  if(!pending || !pending.pc){ toast('No pending reconnect for this peer', 'err'); return; }
-
-  try{
-    await pending.pc.setRemoteDescription({type:'answer', sdp: parsed.sdp});
-    if(state.contacts[peerId]){
-      state.contacts[peerId].spkiB64 = parsed.spkiB64;
-    }
-    scheduleSave();
-    toast('Reconnect answer applied — connecting...', 'ok');
-  } catch(e){
-    toast('Failed to apply answer: '+e.message, 'err');
-  }
+ let parsed;
+ try{ parsed = JSON.parse(raw); } catch{ toast('Invalid answer', 'err'); return; }
+ if(parsed.type !== 'reconnect_answer'){ toast('Not a reconnect answer', 'err'); return; }
+ const peerId = parsed.fromId;
+ const pending = net.pendingReconnect[peerId] || (net.conns[peerId] && net.conns[peerId]);
+ if(!pending || !pending.pc){ toast('No pending reconnect for this peer', 'err'); return; }
+ try{
+  await pending.pc.setRemoteDescription({type:'answer', sdp: parsed.sdp});
+  if(state.contacts[peerId]) state.contacts[peerId].spkiB64 = parsed.spkiB64;
+  scheduleSave();
+  toast('Reconnect answer applied — connecting...', 'ok');
+ } catch(e){
+  toast('Failed to apply answer: '+e.message, 'err');
+ }
 }
 
 /* ── Original invite flow ── */
 async function createInvite(){
-  $('btnCreateInvite').disabled = true;
-  $('btnCreateInvite').textContent = 'Generating...';
-  try{
-    const pc = createPC();
-    const dc = pc.createDataChannel('mesh');
-    net.pendingOffer = { pc, dc };
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    await pc._iceDone;
-
-    const payload = JSON.stringify({
-      type:'invite',
-      sdp: pc.localDescription.sdp,
-      fromId: state.me.id,
-      fromNick: state.me.nickname,
-      spkiB64: state.me.spkiB64
-    });
-
-    $('inviteCodeBox').textContent = payload;
-    $('inviteBlock').classList.remove('hidden');
-    await navigator.clipboard.writeText(payload);
-    toast('Invite copied', 'ok');
-  } catch(e){
-    toast('Failed: '+e.message, 'err');
-  }
-  $('btnCreateInvite').disabled = false;
-  $('btnCreateInvite').textContent = 'Generate Invite';
+ $('btnCreateInvite').disabled = true;
+ $('btnCreateInvite').textContent = 'Generating...';
+ try{
+  const pc = createPC();
+  const dc = pc.createDataChannel('mesh');
+  net.pendingOffer = { pc, dc };
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await pc._iceDone;
+  const payload = JSON.stringify({
+   type:'invite', sdp: pc.localDescription.sdp, fromId: state.me.id, fromNick: state.me.nickname, spkiB64: state.me.spkiB64
+  });
+  $('inviteCodeBox').textContent = payload;
+  $('inviteBlock').classList.remove('hidden');
+  await navigator.clipboard.writeText(payload);
+  toast('Invite copied', 'ok');
+ } catch(e){
+  toast('Failed: '+e.message, 'err');
+ }
+ $('btnCreateInvite').disabled = false;
+ $('btnCreateInvite').textContent = 'Generate Invite';
 }
-
 async function acceptInvite(){
-  const raw = $('inviteInput').value.trim();
-  if(!raw){ toast('Paste an invite code first', 'err'); return; }
-
-  // check if it's a reconnect offer
-  let parsed;
-  try{ parsed = JSON.parse(raw); } catch{ toast('Invalid code', 'err'); return; }
-
-  if(parsed.type === 'reconnect_offer'){
-    await acceptReconnectCode(raw);
-    return;
-  }
-
-  $('btnAcceptInvite').disabled = true;
-  $('btnAcceptInvite').textContent = 'Processing...';
-  try{
-    const pc = createPC();
-    pc.ondatachannel = e=>{
-      const peerId = parsed.fromId;
-      net.conns[peerId] = { pc, status:'connecting' };
-      wireDataChannel(e.channel, peerId);
-      if(!state.contacts[peerId]){
-        state.contacts[peerId] = {
-          nickname: parsed.fromNick || peerId,
-          meshId: parsed.fromId,
-          spkiB64: parsed.spkiB64,
-          online: false,
-          lastSeen: null
-        };
-      }
-      if(!state.chats[peerId]) state.chats[peerId] = [];
-      scheduleSave();
-      renderContacts();
-    };
-
-    await pc.setRemoteDescription({type:'offer', sdp: parsed.sdp});
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    await pc._iceDone;
-
-    const answerPayload = JSON.stringify({
-      type:'answer',
-      sdp: pc.localDescription.sdp,
-      fromId: state.me.id,
-      fromNick: state.me.nickname,
-      spkiB64: state.me.spkiB64
-    });
-
-    $('answerCodeBox').textContent = answerPayload;
-    $('answerBlock').classList.remove('hidden');
-    await navigator.clipboard.writeText(answerPayload);
-    toast('Reply copied — send it back', 'ok');
-  } catch(e){
-    toast('Failed: '+e.message, 'err');
-  }
-  $('btnAcceptInvite').disabled = false;
-  $('btnAcceptInvite').textContent = 'Generate Reply';
+ const raw = $('inviteInput').value.trim();
+ if(!raw){ toast('Paste an invite code first', 'err'); return; }
+ let parsed;
+ try{ parsed = JSON.parse(raw); } catch{ toast('Invalid code', 'err'); return; }
+ if(parsed.type === 'reconnect_offer'){ await acceptReconnectCode(raw); return; }
+ $('btnAcceptInvite').disabled = true;
+ $('btnAcceptInvite').textContent = 'Processing...';
+ try{
+  const pc = createPC();
+  pc.ondatachannel = e=>{
+   const peerId = parsed.fromId;
+   net.conns[peerId] = { pc, status:'connecting' };
+   wireDataChannel(e.channel, peerId);
+   if(!state.contacts[peerId]){
+    state.contacts[peerId] = { nickname: parsed.fromNick || peerId, meshId: parsed.fromId, spkiB64: parsed.spkiB64, online: false, lastSeen: null };
+   }
+   if(!state.chats[peerId]) state.chats[peerId] = [];
+   scheduleSave();
+   renderContacts();
+  };
+  await pc.setRemoteDescription({type:'offer', sdp: parsed.sdp});
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  await pc._iceDone;
+  const answerPayload = JSON.stringify({
+   type:'answer', sdp: pc.localDescription.sdp, fromId: state.me.id, fromNick: state.me.nickname, spkiB64: state.me.spkiB64
+  });
+  $('answerCodeBox').textContent = answerPayload;
+  $('answerBlock').classList.remove('hidden');
+  await navigator.clipboard.writeText(answerPayload);
+  toast('Reply copied — send it back', 'ok');
+ } catch(e){
+  toast('Failed: '+e.message, 'err');
+ }
+ $('btnAcceptInvite').disabled = false;
+ $('btnAcceptInvite').textContent = 'Generate Reply';
 }
-
 async function finalizeInvite(){
-  const raw = $('replyInput').value.trim();
-  if(!raw){ toast('Paste the reply code', 'err'); return; }
-
-  let parsed;
-  try{ parsed = JSON.parse(raw); } catch{ toast('Invalid reply', 'err'); return; }
-
-  // handle reconnect_answer in the same box
-  if(parsed.type === 'reconnect_answer'){
-    await finalizeReconnectAnswer(raw);
-    return;
+ const raw = $('replyInput').value.trim();
+ if(!raw){ toast('Paste the reply code', 'err'); return; }
+ let parsed;
+ try{ parsed = JSON.parse(raw); } catch{ toast('Invalid reply', 'err'); return; }
+ if(parsed.type === 'reconnect_answer'){ await finalizeReconnectAnswer(raw); return; }
+ $('btnFinalize').disabled = true;
+ $('btnFinalize').textContent = 'Connecting...';
+ try{
+  if(!net.pendingOffer || !net.pendingOffer.pc){ toast('Generate an invite first', 'err'); return; }
+  const { pc, dc } = net.pendingOffer;
+  const peerId = parsed.fromId;
+  net.conns[peerId] = { pc, dc, status:'connecting' };
+  wireDataChannel(dc, peerId);
+  if(!state.contacts[peerId]){
+   state.contacts[peerId] = { nickname: parsed.fromNick || peerId, meshId: parsed.fromId, spkiB64: parsed.spkiB64, online: false, lastSeen: null };
   }
-
-  $('btnFinalize').disabled = true;
-  $('btnFinalize').textContent = 'Connecting...';
-  try{
-    if(!net.pendingOffer || !net.pendingOffer.pc){ toast('Generate an invite first', 'err'); return; }
-    const { pc, dc } = net.pendingOffer;
-    const peerId = parsed.fromId;
-    net.conns[peerId] = { pc, dc, status:'connecting' };
-    wireDataChannel(dc, peerId);
-
-    if(!state.contacts[peerId]){
-      state.contacts[peerId] = {
-        nickname: parsed.fromNick || peerId,
-        meshId: parsed.fromId,
-        spkiB64: parsed.spkiB64,
-        online: false,
-        lastSeen: null
-      };
-    }
-    if(!state.chats[peerId]) state.chats[peerId] = [];
-    scheduleSave();
-    renderContacts();
-
-    await pc.setRemoteDescription({type:'answer', sdp: parsed.sdp});
-    net.pendingOffer = null;
-    toast('Connecting...', 'ok');
-  } catch(e){
-    toast('Failed: '+e.message, 'err');
-  }
-  $('btnFinalize').disabled = false;
-  $('btnFinalize').textContent = 'Connect';
+  if(!state.chats[peerId]) state.chats[peerId] = [];
+  scheduleSave();
+  renderContacts();
+  await pc.setRemoteDescription({type:'answer', sdp: parsed.sdp});
+  net.pendingOffer = null;
+  toast('Connecting...', 'ok');
+ } catch(e){
+  toast('Failed: '+e.message, 'err');
+ }
+ $('btnFinalize').disabled = false;
+ $('btnFinalize').textContent = 'Connect';
 }
 
 /* ── Delivery receipts ── */
 function markDelivered(peerId, msgId){
-  const msgs = state.chats[peerId] || [];
-  const m = msgs.find(x=>x.id===msgId);
-  if(m){ m.delivered = true; scheduleSave(); }
-  const el = document.getElementById('msg-'+msgId);
-  if(el){
-    const tick = el.querySelector('.msg-tick');
-    if(tick) tick.textContent = '✓✓';
-  }
+ const msgs = state.chats[peerId] || [];
+ const m = msgs.find(x=>x.id===msgId);
+ if(m){ m.delivered = true; scheduleSave(); }
+ const el = document.getElementById('msg-'+msgId);
+ if(el){
+  const tick = el.querySelector('.msg-tick');
+  if(tick) tick.textContent = '✓✓';
+ }
 }
 
 /* ── Notifications ── */
 function notifyUser(title, body){
-  if(!state.notificationsEnabled) return;
-  if(document.visibilityState==='visible') return;
-  if(Notification.permission==='granted'){
-    new Notification(title, {body, icon:'', tag:'meshcore'});
-  }
+ if(!state.notificationsEnabled) return;
+ if(document.visibilityState==='visible') return;
+ if(Notification.permission==='granted'){
+  new Notification(title, {body, icon:'', tag:'meshcore'});
+ }
 }
-
 function toggleNotifications(){
-  const tog = $('notifToggle');
-  if(!state.notificationsEnabled){
-    Notification.requestPermission().then(p=>{
-      if(p==='granted'){
-        state.notificationsEnabled = true;
-        tog.classList.add('on');
-        toast('Notifications enabled', 'ok');
-        scheduleSave();
-      } else {
-        toast('Permission denied', 'err');
-      }
-    });
-  } else {
-    state.notificationsEnabled = false;
-    tog.classList.remove('on');
+ const tog = $('notifToggle');
+ if(!state.notificationsEnabled){
+  Notification.requestPermission().then(p=>{
+   if(p==='granted'){
+    state.notificationsEnabled = true;
+    tog.classList.add('on');
+    toast('Notifications enabled', 'ok');
     scheduleSave();
-  }
+   } else { toast('Permission denied', 'err'); }
+  });
+ } else {
+  state.notificationsEnabled = false;
+  tog.classList.remove('on');
+  scheduleSave();
+ }
 }
 
 /* ── Broadcasts ── */
 function postStatus(){
-  const text = $('statusInput').value.trim();
-  if(!text) return;
-  const entry = { from: state.me.nickname, text, time: stamp() };
-  state.broadcasts.unshift(entry);
-  scheduleSave();
-  renderBroadcasts();
-  $('statusInput').value = '';
-  // send to all connected peers
-  for(const pid of Object.keys(net.conns)){
-    dcSend(pid, {type:'broadcast', text});
-  }
-  toast('Broadcast sent', 'ok');
+ const text = $('statusInput').value.trim();
+ if(!text) return;
+ const entry = { from: state.me.nickname, text, time: stamp() };
+ state.broadcasts.unshift(entry);
+ scheduleSave();
+ renderBroadcasts();
+ $('statusInput').value = '';
+ for(const pid of Object.keys(net.conns)){ dcSend(pid, {type:'broadcast', text}); }
+ toast('Broadcast sent', 'ok');
 }
-
 function renderBroadcasts(){
-  const feed = $('broadcastFeed');
-  if(!state.broadcasts.length){
-    feed.innerHTML = '<p class="empty-state">No broadcasts yet.</p>';
-    return;
-  }
-  feed.innerHTML = state.broadcasts.map(b=>`
-    <div class="broadcast-item">
-      <div class="bc-header"><span class="bc-name">${esc(b.from)}</span><span>${esc(b.time||'')}</span></div>
-      <div style="font-size:15px;line-height:1.6;">${esc(b.text)}</div>
-    </div>`).join('');
+ const feed = $('broadcastFeed');
+ if(!state.broadcasts.length){
+  feed.innerHTML = '<p class="empty-state">No broadcasts yet.</p>';
+  return;
+ }
+ feed.innerHTML = state.broadcasts.map(b=>`
+  <div class="broadcast-item">
+   <div class="bc-header"><span class="bc-name">${esc(b.from)}</span><span>${esc(b.time||'')}</span></div>
+   <div style="font-size:15px;line-height:1.6;">${esc(b.text)}</div>
+  </div>`).join('');
 }
 
 /* ── Contacts rendering ── */
 function renderContacts(){
-  const list = $('contactsList');
-  const ids = Object.keys(state.contacts);
-  if(!ids.length){
-    list.innerHTML = '<p class="empty-state">No contacts yet.<br>Use the Link tab to connect.</p>';
-    updateConnBadge();
-    return;
-  }
-  // sort: online first, then by nickname
-  ids.sort((a,b)=>{
-    const ao = state.contacts[a].online ? 1 : 0;
-    const bo = state.contacts[b].online ? 1 : 0;
-    if(ao!==bo) return bo-ao;
-    return (state.contacts[a].nickname||'').localeCompare(state.contacts[b].nickname||'');
-  });
-  list.innerHTML = ids.map(id=>{
-    const c = state.contacts[id];
-    const unread = c.unread || 0;
-    return `
-    <div class="contact-item" onclick="openContactInfo('${id}')">
-      <div class="contact-info">
-        <h3>${esc(c.nickname)}</h3>
-        <p>${esc(c.meshId||id)} ${c.lastSeen ? '· '+new Date(c.lastSeen).toLocaleDateString() : ''}</p>
-      </div>
-      <div class="contact-right">
-        ${unread ? `<div class="unread-badge">${unread}</div>` : ''}
-        <div class="status-dot${c.online?' live':''}"></div>
-      </div>
-    </div>`;
-  }).join('');
+ const list = $('contactsList');
+ const ids = Object.keys(state.contacts);
+ if(!ids.length){
+  list.innerHTML = '<p class="empty-state">No contacts yet.<br>Use the Link tab to connect.</p>';
   updateConnBadge();
+  return;
+ }
+ ids.sort((a,b)=>{
+  const ao = state.contacts[a].online ? 1 : 0;
+  const bo = state.contacts[b].online ? 1 : 0;
+  if(ao!==bo) return bo-ao;
+  return (state.contacts[a].nickname||'').localeCompare(state.contacts[b].nickname||'');
+ });
+ list.innerHTML = ids.map(id=>{
+  const c = state.contacts[id];
+  const unread = c.unread || 0;
+  return `
+  <div class="contact-item" onclick="openContactInfo('${id}')">
+   <div class="contact-info">
+    <h3>${esc(c.nickname)}</h3>
+    <p>${esc(c.meshId||id)} ${c.lastSeen ? '· '+new Date(c.lastSeen).toLocaleDateString() : ''}</p>
+   </div>
+   <div class="contact-right">
+    ${unread ? `<div class="unread-badge">${unread}</div>` : ''}
+    <div class="status-dot${c.online?' live':''}"></div>
+   </div>
+  </div>`;
+ }).join('');
+ updateConnBadge();
 }
-
 function updateConnBadge(){
-  const online = Object.values(state.contacts).filter(c=>c.online).length;
-  $('connCountBadge').textContent = online+' Online';
+ const online = Object.values(state.contacts).filter(c=>c.online).length;
+ $('connCountBadge').textContent = online+' Online';
 }
 
 /* ── Contact Info Screen ── */
 function openContactInfo(peerId){
-  infoContactId = peerId;
-  const c = state.contacts  [peerId];
-  if(!c) return;
-
-  $('infoName').textContent = c.nickname || 'Contact';
-  $('infoNameBig').textContent = c.nickname || 'Contact';
-  $('infoAvatar').textContent = initials(c.nickname);
-  $('infoId').textContent = c.meshId || peerId;
-  $('infoStatusLine').textContent = c.online ? '🟢 Online now' : c.lastSeen ? '⚪ Last seen '+new Date(c.lastSeen).toLocaleString() : '⚪ Offline';
-  $('infoLive').textContent = c.online ? 'Connected' : 'Disconnected';
-  $('infoMsgCount').textContent = (state.chats[peerId]||[]).length + ' messages';
-
-  // reset reconnect block
-  $('reconnectBlock').classList.add('hidden');
-  $('reconnectCodeBox').textContent = '';
-  $('btnReconnect').disabled = false;
-  $('btnReconnect').textContent = 'Generate Reconnect Link';
-
-  openScreen('screen-contact-info');
+ infoContactId = peerId;
+ const c = state.contacts[peerId];
+ if(!c) return;
+ $('infoName').textContent = c.nickname || 'Contact';
+ $('infoNameBig').textContent = c.nickname || 'Contact';
+ $('infoAvatar').textContent = initials(c.nickname);
+ $('infoId').textContent = c.meshId || peerId;
+ $('infoStatusLine').textContent = c.online ? '🟢 Online now' : c.lastSeen ? '⚪ Last seen '+new Date(c.lastSeen).toLocaleString() : '⚪ Offline';
+ $('infoLive').textContent = c.online ? 'Connected' : 'Disconnected';
+ $('infoMsgCount').textContent = (state.chats[peerId]||[]).length + ' messages';
+ $('reconnectBlock').classList.add('hidden');
+ $('reconnectCodeBox').textContent = '';
+ $('btnReconnect').disabled = false;
+ $('btnReconnect').textContent = 'Generate Reconnect Link';
+ openScreen('screen-contact-info');
 }
-
 function openChatFromInfo(){
-  if(!infoContactId) return;
-  closeScreen('screen-contact-info');
-  setTimeout(()=> openChat(infoContactId), 260);
+ if(!infoContactId) return;
+ closeScreen('screen-contact-info');
+ setTimeout(()=> openChat(infoContactId), 260);
 }
-
 function deleteContact(){
-  if(!infoContactId) return;
-  const c = state.contacts[infoContactId];
-  const name = c ? c.nickname : infoContactId;
-  if(!confirm('Delete '+name+' and all chat history? This cannot be undone.')) return;
-
-  // close connection if live
-  const conn = net.conns[infoContactId];
-  if(conn){
-    try{ if(conn.dc) conn.dc.close(); } catch(e){}
-    try{ if(conn.pc) conn.pc.close(); } catch(e){}
-    delete net.conns[infoContactId];
-  }
-
-  delete state.contacts[infoContactId];
-  delete state.chats[infoContactId];
-  if(net.pendingReconnect[infoContactId]) delete net.pendingReconnect[infoContactId];
-
-  scheduleSave();
-  renderContacts();
-  closeScreen('screen-contact-info');
-  toast(name+' deleted', 'ok');
-  infoContactId = null;
+ if(!infoContactId) return;
+ const c = state.contacts[infoContactId];
+ const name = c ? c.nickname : infoContactId;
+ if(!confirm('Delete '+name+' and all chat history? This cannot be undone.')) return;
+ const conn = net.conns[infoContactId];
+ if(conn){
+  try{ if(conn.dc) conn.dc.close(); } catch(e){}
+  try{ if(conn.pc) conn.pc.close(); } catch(e){}
+  delete net.conns[infoContactId];
+ }
+ delete state.contacts[infoContactId];
+ delete state.chats[infoContactId];
+ if(net.pendingReconnect[infoContactId]) delete net.pendingReconnect[infoContactId];
+ scheduleSave();
+ renderContacts();
+ closeScreen('screen-contact-info');
+ toast(name+' deleted', 'ok');
+ infoContactId = null;
 }
 
 /* ── Screen navigation ── */
-function openScreen(screenId){
-  document.getElementById(screenId).classList.add('active');
-}
-
-function closeScreen(screenId){
-  document.getElementById(screenId).classList.remove('active');
-}
+function openScreen(screenId){ document.getElementById(screenId).classList.add('active'); }
+function closeScreen(screenId){ document.getElementById(screenId).classList.remove('active'); }
 
 /* ── Chat screen ── */
 function openChat(peerId){
-  const c = state.contacts[peerId];
-  if(!c) return;
-
-  activeChat = peerId;
-
-  // clear unread
-  if(state.contacts[peerId].unread){
-    state.contacts[peerId].unread = 0;
-    scheduleSave();
-    renderContacts();
-  }
-
-  updateChatHeader();
-  renderChatHistory(peerId);
-  openScreen('screen-chat');
-  setTimeout(()=>{
-    scrollChatBottom();
-    $('chatInput').focus();
-  }, 60);
+ const c = state.contacts[peerId];
+ if(!c) return;
+ activeChat = peerId;
+ if(state.contacts[peerId].unread){
+  state.contacts[peerId].unread = 0;
+  scheduleSave();
+  renderContacts();
+ }
+ updateChatHeader();
+ renderChatHistory(peerId);
+ openScreen('screen-chat');
+ setTimeout(()=>{
+  scrollChatBottom();
+  $('chatInput').focus();
+ }, 60);
 }
-
 function closeChat(){
-  closeScreen('screen-chat');
-  activeChat = null;
-  // stop recording if active
-  if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
-    try{ net.mediaRecorder.stop(); } catch(e){}
-  }
-  stopRecordingUI();
+ closeScreen('screen-chat');
+ activeChat = null;
+ if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
+  try{ net.mediaRecorder.stop(); } catch(e){}
+ }
+ stopRecordingUI();
 }
-
 function updateChatHeader(){
-  if(!activeChat) return;
-  const c = state.contacts[activeChat];
-  if(!c) return;
-  $('chatPeerName').textContent = c.nickname || 'Chat';
-  $('chatPeerSub').textContent = c.online ? 'Connected' : 'Offline';
-  const dot = $('chatLiveDot');
-  dot.classList.toggle('live', !!c.online);
+ if(!activeChat) return;
+ const c = state.contacts[activeChat];
+ if(!c) return;
+ $('chatPeerName').textContent = c.nickname || 'Chat';
+ $('chatPeerSub').textContent = c.online ? 'Connected' : 'Offline';
+ const dot = $('chatLiveDot');
+ dot.classList.toggle('live', !!c.online);
 }
-
 function renderChatHistory(peerId){
-  const box = $('chatMessages');
-  box.innerHTML = '';
-  const msgs = state.chats[peerId] || [];
-  if(!msgs.length){
-    const sys = makeSysMsg('No messages yet. Say hello!');
-    box.appendChild(sys);
-    return;
-  }
-  msgs.forEach(m=> box.appendChild(buildMsgEl(m, peerId)));
+ const box = $('chatMessages');
+ box.innerHTML = '';
+ const msgs = state.chats[peerId] || [];
+ if(!msgs.length){
+  const sys = makeSysMsg('No messages yet. Say hello!');
+  box.appendChild(sys);
+  return;
+ }
+ msgs.forEach(m=> box.appendChild(buildMsgEl(m, peerId)));
 }
-
 function appendMessage(entry, peerId){
-  const box = $('chatMessages');
-  // remove empty state sys message if present
-  const sys = box.querySelector('.msg.sys');
-  if(sys && sys.textContent.includes('No messages')) sys.remove();
-  box.appendChild(buildMsgEl(entry, peerId));
+ const box = $('chatMessages');
+ const sys = box.querySelector('.msg.sys');
+ if(sys && sys.textContent.includes('No messages')) sys.remove();
+ box.appendChild(buildMsgEl(entry, peerId));
 }
-
 function makeSysMsg(text){
-  const d = document.createElement('div');
-  d.className = 'msg sys';
-  d.textContent = text;
-  return d;
+ const d = document.createElement('div');
+ d.className = 'msg sys';
+ d.textContent = text;
+ return d;
 }
-
 function buildMsgEl(m, peerId){
-  const wrap = document.createElement('div');
-  wrap.id = 'msg-'+m.id;
-
-  if(m.type === 'system' || m.from === 'sys'){
-    wrap.className = 'msg sys';
-    wrap.textContent = m.text || '';
-    return wrap;
-  }
-
-  const isMe = m.from === 'me';
-  wrap.className = 'msg '+(isMe ? 'me' : 'peer');
-
-  if(m.type === 'text'){
-    wrap.innerHTML = `
-      <div>${esc(m.text)}</div>
-      <div class="msg-time">${esc(m.time||'')} ${isMe ? `<span class="msg-tick">${m.delivered?'✓✓':'✓'}</span>` : ''}</div>`;
-  }
-  else if(m.type === 'voice'){
-    const bars = Array.from({length:20}, (_,i)=>{
-      const h = 6 + Math.abs(Math.sin(i*0.7+(m.id||0))*18);
-      return `<div class="voice-bar" style="height:${h}px"></div>`;
-    }).join('');
-    wrap.innerHTML = `
-      <div class="voice-msg">
-        <button class="voice-play-btn" onclick="playVoice('${m.id}','${m.b64||''}',this)">▶</button>
-        <div class="voice-waveform">${bars}</div>
-        <span class="voice-duration">${fmtDur(m.duration||0)}</span>
-      </div>
-      <div class="msg-time">${esc(m.time||'')}</div>`;
-  }
-  else if(m.type === 'file'){
-    const ext = (m.name||'').split('.').pop().toUpperCase().slice(0,4);
-    wrap.innerHTML = `
-      <div class="file-msg" onclick="downloadFile('${m.id}')">
-        <div class="file-icon">${esc(ext)}</div>
-        <div class="file-details">
-          <div class="file-name">${esc(m.name||'File')}</div>
-          <div class="file-size-label">${fmtSize(m.size||0)}</div>
-          <div class="file-progress"><div class="file-progress-bar" id="fp-${m.id}" style="width:${m.progress||0}%"></div></div>
-        </div>
-      </div>
-      <div class="msg-time">${esc(m.time||'')}</div>`;
-  }
-
+ const wrap = document.createElement('div');
+ wrap.id = 'msg-'+m.id;
+ if(m.type === 'system' || m.from === 'sys'){
+  wrap.className = 'msg sys';
+  wrap.textContent = m.text || '';
   return wrap;
+ }
+ const isMe = m.from === 'me';
+ wrap.className = 'msg '+(isMe ? 'me' : 'peer');
+ if(m.type === 'text'){
+  wrap.innerHTML = `
+   <div>${esc(m.text)}</div>
+   <div class="msg-time">${esc(m.time||'')} ${isMe ? `<span class="msg-tick">${m.delivered?'✓✓':'✓'}</span>` : ''}</div>`;
+ }
+ else if(m.type === 'voice'){
+  const bars = Array.from({length:20}, (_,i)=>{
+   const h = 6 + Math.abs(Math.sin(i*0.7+(m.id||0))*18);
+   return `<div class="voice-bar" style="height:${h}px"></div>`;
+  }).join('');
+  wrap.innerHTML = `
+   <div class="voice-msg">
+    <button class="voice-play-btn" onclick="playVoice('${m.id}','${m.b64||''}',this)">▶</button>
+    <div class="voice-waveform">${bars}</div>
+    <span class="voice-duration">${fmtDur(m.duration||0)}</span>
+   </div>
+   <div class="msg-time">${esc(m.time||'')}</div>`;
+ }
+ else if(m.type === 'file'){
+  const ext = (m.name||'').split('.').pop().toUpperCase().slice(0,4);
+  wrap.innerHTML = `
+   <div class="file-msg" onclick="downloadFile('${m.id}')">
+    <div class="file-icon">${esc(ext)}</div>
+    <div class="file-details">
+     <div class="file-name">${esc(m.name||'File')}</div>
+     <div class="file-size-label">${fmtSize(m.size||0)}</div>
+     <div class="file-progress"><div class="file-progress-bar" id="fp-${m.id}" style="width:${m.progress||0}%"></div></div>
+    </div>
+   </div>
+   <div class="msg-time">${esc(m.time||'')}</div>`;
+ }
+ return wrap;
 }
-
 function scrollChatBottom(){
-  const box = $('chatMessages');
-  box.scrollTop = box.scrollHeight;
+ const box = $('chatMessages');
+ box.scrollTop = box.scrollHeight;
 }
-
 function updateFileProgress(fileId, pct){
-  const bar = document.getElementById('fp-'+fileId);
-  if(bar) bar.style.width = pct+'%';
-  const msgs = state.chats[activeChat] || [];
-  const m = msgs.find(x=>x.id===fileId);
-  if(m) m.progress = pct;
+ const bar = document.getElementById('fp-'+fileId);
+ if(bar) bar.style.width = pct+'%';
+ const msgs = state.chats[activeChat] || [];
+ const m = msgs.find(x=>x.id===fileId);
+ if(m) m.progress = pct;
 }
-
 function finalizeFileMessage(peerId, fileId, url, name, size){
-  const msgs = state.chats[peerId] || [];
-  const m = msgs.find(x=>x.id===fileId);
-  if(m){ m.url = url; m.progress = 100; }
-  updateFileProgress(fileId, 100);
+ const msgs = state.chats[peerId] || [];
+ const m = msgs.find(x=>x.id===fileId);
+ if(m){ m.url = url; m.progress = 100; }
+ updateFileProgress(fileId, 100);
 }
-
 function downloadFile(fileId){
-  const msgs = state.chats[activeChat] || [];
-  const m = msgs.find(x=>x.id===fileId);
-  if(!m || !m.url){ toast('File not ready yet', 'err'); return; }
-  const a = document.createElement('a');
-  a.href = m.url;
-  a.download = m.name || 'file';
-  a.click();
+ const msgs = state.chats[activeChat] || [];
+ const m = msgs.find(x=>x.id===fileId);
+ if(!m || !m.url){ toast('File not ready yet', 'err'); return; }
+ const a = document.createElement('a');
+ a.href = m.url;
+ a.download = m.name || 'file';
+ a.click();
 }
 
 /* ── Send chat ── */
 function sendChat(){
-  const input = $('chatInput');
-  const text = input.value.trim();
-  if(!text || !activeChat) return;
-  const isOnline = (state.contacts[activeChat]||{}).online;
-  const id = Date.now()+'-'+Math.random().toString(36).slice(2,7);
-  const entry = { id, type:'text', from:'me', text, time: stamp(), delivered: false };
+ const input = $('chatInput');
+ const text = input.value.trim();
+ if(!text || !activeChat) return;
+ const isOnline = (state.contacts[activeChat]||{}).online;
+ const id = Date.now()+'-'+Math.random().toString(36).slice(2,7);
+ const entry = { id, type:'text', from:'me', text, time: stamp(), delivered: false };
+ if(!state.chats[activeChat]) state.chats[activeChat] = [];
+ state.chats[activeChat].push(entry);
+ scheduleSave();
+ appendMessage(entry, activeChat);
+ scrollChatBottom();
+ input.value = '';
+ if(isOnline){
+  const sent = dcSend(activeChat, {type:'chat', id, text});
+  if(!sent) toast('Message queued — peer reconnecting', 'err');
+ } else {
+  toast('Peer offline — message saved locally', 'err');
+ }
+}
+$('chatInput').addEventListener('keydown', e=>{
+ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+});
 
+/* ── Voice messages ── */
+function startRecording(){
+ if(!navigator.mediaDevices){ toast('Microphone not available', 'err'); return; }
+ navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+  net.recordingChunks = [];
+  net.recordingSeconds = 0;
+  net.mediaRecorder = new MediaRecorder(stream);
+  net.mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) net.recordingChunks.push(e.data); };
+  net.mediaRecorder.onstop = finalizeRecording;
+  net.mediaRecorder.start(100);
+  $('chatComposer').classList.add('hidden');
+  $('recordingBar').classList.add('active');
+  $('recTimer').textContent = '0:00';
+  net.recordingTimer = setInterval(()=>{
+   net.recordingSeconds++;
+   $('recTimer').textContent = fmtDur(net.recordingSeconds);
+   if(net.recordingSeconds >= 120){ sendRecording(); }
+  }, 1000);
+ }).catch(()=> toast('Microphone permission denied', 'err'));
+}
+function stopRecordingUI(){
+ $('recordingBar').classList.remove('active');
+ $('chatComposer').classList.remove('hidden');
+ clearInterval(net.recordingTimer);
+}
+function cancelRecording(){
+ if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
+  net.mediaRecorder.onstop = ()=>{};
+  net.mediaRecorder.stop();
+  net.mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+ }
+ stopRecordingUI();
+ net.recordingChunks = [];
+}
+function sendRecording(){
+ if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
+  net.mediaRecorder.stop();
+  net.mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+ }
+ stopRecordingUI();
+}
+function finalizeRecording(){
+ if(!net.recordingChunks.length || !activeChat) return;
+ const blob = new Blob(net.recordingChunks, {type:'audio/webm'});
+ const duration = net.recordingSeconds;
+ const reader = new FileReader();
+ reader.onload = ()=>{
+  const b64 = ab2b64(reader.result);
+  const id = Date.now()+'-voice';
+  const entry = { id, type:'voice', from:'me', b64, duration, time: stamp() };
   if(!state.chats[activeChat]) state.chats[activeChat] = [];
   state.chats[activeChat].push(entry);
   scheduleSave();
   appendMessage(entry, activeChat);
   scrollChatBottom();
-  input.value = '';
-
-  if(isOnline){
-    const sent = dcSend(activeChat, {type:'chat', id, text});
-    if(!sent) toast('Message queued — peer reconnecting', 'err');
-  } else {
-    toast('Peer offline — message saved locally', 'err');
-  }
+  dcSend(activeChat, {type:'voice', id, b64, duration});
+ };
+ reader.readAsArrayBuffer(blob);
+ net.recordingChunks = [];
 }
-
-// send on Enter key
-$('chatInput').addEventListener('keydown', e=>{
-  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
-});
-
-/* ── Voice messages ── */
-function startRecording(){
-  if(!navigator.mediaDevices){ toast('Microphone not available', 'err'); return; }
-  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
-    net.recordingChunks = [];
-    net.recordingSeconds = 0;
-    net.mediaRecorder = new MediaRecorder(stream);
-    net.mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) net.recordingChunks.push(e.data); };
-    net.mediaRecorder.onstop = finalizeRecording;
-    net.mediaRecorder.start(100);
-
-    $('chatComposer').classList.add('hidden');
-    $('recordingBar').classList.add('active');
-    $('recTimer').textContent = '0:00';
-
-    net.recordingTimer = setInterval(()=>{
-      net.recordingSeconds++;
-      $('recTimer').textContent = fmtDur(net.recordingSeconds);
-      if(net.recordingSeconds >= 120){ sendRecording(); }
-    }, 1000);
-  }).catch(()=> toast('Microphone permission denied', 'err'));
-}
-
-function stopRecordingUI(){
-  $('recordingBar').classList.remove('active');
-  $('chatComposer').classList.remove('hidden');
-  clearInterval(net.recordingTimer);
-}
-
-function cancelRecording(){
-  if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
-    net.mediaRecorder.onstop = ()=>{};
-    net.mediaRecorder.stop();
-    net.mediaRecorder.stream.getTracks().forEach(t=>t.stop());
-  }
-  stopRecordingUI();
-  net.recordingChunks = [];
-}
-
-function sendRecording(){
-  if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
-    net.mediaRecorder.stop();
-    net.mediaRecorder.stream.getTracks().forEach(t=>t.stop());
-  }
-  stopRecordingUI();
-}
-
-function finalizeRecording(){
-  if(!net.recordingChunks.length || !activeChat) return;
-  const blob = new Blob(net.recordingChunks, {type:'audio/webm'});
-  const duration = net.recordingSeconds;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    const b64 = ab2b64(reader.result);
-    const id = Date.now()+'-voice';
-    const entry = { id, type:'voice', from:'me', b64, duration, time: stamp() };
-    if(!state.chats[activeChat]) state.chats[activeChat] = [];
-    state.chats[activeChat].push(entry);
-    scheduleSave();
-    appendMessage(entry, activeChat);
-    scrollChatBottom();
-    dcSend(activeChat, {type:'voice', id, b64, duration});
-  };
-  reader.readAsArrayBuffer(blob);
-  net.recordingChunks = [];
-}
-
 function playVoice(msgId, b64, btn){
-  try{
-    const buf = b642ab(b64);
-    const blob = new Blob([buf], {type:'audio/webm'});
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    btn.textContent = '⏸';
-    audio.play();
-    audio.onended = ()=>{ btn.textContent = '▶'; URL.revokeObjectURL(url); };
-    audio.onerror = ()=>{ btn.textContent = '▶'; toast('Could not play audio', 'err'); };
-  } catch(e){ toast('Playback error', 'err'); }
+ try{
+  const buf = b642ab(b64);
+  const blob = new Blob([buf], {type:'audio/webm'});
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  btn.textContent = '🟢';
+  audio.play();
+  audio.onended = ()=>{ btn.textContent = '▶'; URL.revokeObjectURL(url); };
+  audio.onerror = ()=>{ btn.textContent = '▶'; toast('Could not play audio', 'err'); };
+ } catch(e){ toast('Playback error', 'err'); }
 }
 
 /* ── File sending ── */
 function triggerFileInput(){
-  $('fileInput').value = '';
-  $('fileInput').click();
+ $('fileInput').value = '';
+ $('fileInput').click();
 }
-
 function handleFileSelect(e){
-  const file = e.target.files[0];
-  if(!file || !activeChat) return;
-  if(file.size > 20*1024*1024){ toast('Max file size is 20 MB', 'err'); return; }
-  sendFile(file, activeChat);
+ const file = e.target.files[0];
+ if(!file || !activeChat) return;
+ if(file.size > 20*1024*1024){ toast('Max file size is 20 MB', 'err'); return; }
+ sendFile(file, activeChat);
 }
-
 function sendFile(file, peerId){
-  const fileId = Date.now()+'-file';
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    const buf = reader.result;
-    const total = Math.ceil(buf.byteLength / CHUNK_SIZE);
-
-    const entry = { id: fileId, type:'file', from:'me', name: file.name, size: file.size, mime: file.type, progress:0, time: stamp() };
-    if(!state.chats[peerId]) state.chats[peerId] = [];
-    state.chats[peerId].push(entry);
-    scheduleSave();
-    if(activeChat===peerId){ appendMessage(entry, peerId); scrollChatBottom(); }
-
-    dcSend(peerId, {type:'file_meta', fileId, name: file.name, size: file.size, mime: file.type, total});
-
-    let i = 0;
-    function sendNext(){
-      if(i >= total){ updateFileProgress(fileId, 100); return; }
-      const start = i * CHUNK_SIZE;
-      const chunk = buf.slice(start, start + CHUNK_SIZE);
-      const idBytes = te.encode(fileId);
-      const header = new Uint8Array(1 + idBytes.length);
-      header[0] = idBytes.length;
-      header.set(idBytes, 1);
-      const out = new Uint8Array(header.length + chunk.byteLength);
-      out.set(header, 0);
-      out.set(new Uint8Array(chunk), header.length);
-      const conn = net.conns[peerId];
-      if(conn && conn.dc && conn.dc.readyState === 'open'){
-        conn.dc.send(out.buffer);
-        updateFileProgress(fileId, Math.round(((i+1)/total)*100));
-      }
-      i++;      setTimeout(sendNext, 16);
-    }
-    sendNext();
-  };
-  reader.readAsArrayBuffer(file);
+ const fileId = Date.now()+'-file';
+ const reader = new FileReader();
+ reader.onload = ()=>{
+  const buf = reader.result;
+  const total = Math.ceil(buf.byteLength / CHUNK_SIZE);
+  const entry = { id: fileId, type:'file', from:'me', name: file.name, size: file.size, mime: file.type, progress:0, time: stamp() };
+  if(!state.chats[peerId]) state.chats[peerId] = [];
+  state.chats[peerId].push(entry);
+  scheduleSave();
+  if(activeChat===peerId){ appendMessage(entry, peerId); scrollChatBottom(); }
+  dcSend(peerId, {type:'file_meta', fileId, name: file.name, size: file.size, mime: file.type, total});
+  let i = 0;
+  function sendNext(){
+   if(i >= total){ updateFileProgress(fileId, 100); return; }
+   const start = i * CHUNK_SIZE;
+   const chunk = buf.slice(start, start + CHUNK_SIZE);
+   const idBytes = te.encode(fileId);
+   const header = new Uint8Array(1 + idBytes.length);
+   header[0] = idBytes.length;
+   header.set(idBytes, 1);
+   const out = new Uint8Array(header.length + chunk.byteLength);
+   out.set(header, 0);
+   out.set(new Uint8Array(chunk), header.length);
+   const conn = net.conns[peerId];
+   if(conn && conn.dc && conn.dc.readyState === 'open'){
+    conn.dc.send(out.buffer);
+    updateFileProgress(fileId, Math.round(((i+1)/total)*100));
+   }
+   i++; setTimeout(sendNext, 16);
+  }
+  sendNext();
+ };
+ reader.readAsArrayBuffer(file);
 }
 
 /* ── Tab switching ── */
 function switchTab(viewId){
-  document.querySelectorAll('.view').forEach(v=> v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=> n.classList.remove('active'));
-  const view = $(viewId);
-  if(view) view.classList.add('active');
-  const nav = document.querySelector(`.nav-item[data-tab="${viewId}"]`);
-  if(nav) nav.classList.add('active');
-
-  // refresh relevant views on switch
-  if(viewId==='view-contacts') renderContacts();
-  if(viewId==='view-status') renderBroadcasts();
-  if(viewId==='view-settings') renderSettings();
+ document.querySelectorAll('.view').forEach(v=> v.classList.remove('active'));
+ document.querySelectorAll('.nav-item').forEach(n=> n.classList.remove('active'));
+ const view = $(viewId);
+ if(view) view.classList.add('active');
+ const nav = document.querySelector(`.nav-item[data-tab="${viewId}"]`);
+ if(nav) nav.classList.add('active');
+ if(viewId==='view-contacts') renderContacts();
+ if(viewId==='view-status') renderBroadcasts();
+ if(viewId==='view-settings') renderSettings();
 }
 
 /* ── Settings ── */
 function renderSettings(){
-  $('settingsName').value = state.me.nickname || '';
-  $('settingsId').textContent = state.me.id || '—';
-  const tog = $('notifToggle');
-  if(state.notificationsEnabled) tog.classList.add('on');
-  else tog.classList.remove('on');
-  $('pinSetupBtn').textContent = state.pin ? 'Change PIN' : 'Set App PIN';
+ $('settingsName').value = state.me.nickname || '';
+ $('settingsId').textContent = state.me.id || '—';
+ const tog = $('notifToggle');
+ if(state.notificationsEnabled) tog.classList.add('on');
+ else tog.classList.remove('on');
+ $('pinSetupBtn').textContent = state.pin ? 'Change PIN' : 'Set App PIN';
 }
-
 function updateName(){
-  const val = $('settingsName').value.trim();
-  if(!val) return;
-  state.me.nickname = val;
-  scheduleSave();
-  // broadcast updated nick to all connected peers
-  for(const pid of Object.keys(net.conns)){
-    dcSend(pid, {type:'hello', nickname: state.me.nickname, meshId: state.me.id, spkiB64: state.me.spkiB64});
-  }
-  toast('Nickname updated', 'ok');
+ const val = $('settingsName').value.trim();
+ if(!val) return;
+ state.me.nickname = val;
+ scheduleSave();
+ for(const pid of Object.keys(net.conns)){
+  dcSend(pid, {type:'hello', nickname: state.me.nickname, meshId: state.me.id, spkiB64: state.me.spkiB64});
+ }
+ toast('Nickname updated', 'ok');
 }
-
 function togglePinSetup(){
-  const block = $('pinSetupBlock');
-  block.classList.toggle('hidden');
-  if(!block.classList.contains('hidden')) $('pinInput').focus();
+ const block = $('pinSetupBlock');
+ block.classList.toggle('hidden');
+ if(!block.classList.contains('hidden')) $('pinInput').focus();
 }
-
 function savePin(){
-  const val = $('pinInput').value.trim();
-  if(!/^\d{4}$/.test(val)){ toast('PIN must be exactly 4 digits', 'err'); return; }
-  state.pin = val;
-  scheduleSave();
-  $('pinInput').value = '';
-  $('pinSetupBlock').classList.add('hidden');
-  $('pinSetupBtn').textContent = 'Change PIN';
-  toast('PIN saved', 'ok');
+ const val = $('pinInput').value.trim();
+ if(!/^\d{4}$/.test(val)){ toast('PIN must be exactly 4 digits', 'err'); return; }
+ state.pin = val;
+ scheduleSave();
+ $('pinInput').value = '';
+ $('pinSetupBlock').classList.add('hidden');
+ $('pinSetupBtn').textContent = 'Change PIN';
+ toast('PIN saved', 'ok');
 }
-
 function removePin(){
-  state.pin = null;
-  scheduleSave();
-  $('pinInput').value = '';
-  $('pinSetupBlock').classList.add('hidden');
-  $('pinSetupBtn').textContent = 'Set App PIN';
-  toast('PIN removed', 'ok');
+ state.pin = null;
+ scheduleSave();
+ $('pinInput').value = '';
+ $('pinSetupBlock').classList.add('hidden');
+ $('pinSetupBtn').textContent = 'Set App PIN';
+ toast('PIN removed', 'ok');
 }
-
 function exportIdentity(){
-  const dump = JSON.stringify({
-    nickname: state.me.nickname,
-    spkiB64: state.me.spkiB64,
-    pkcs8B64: state.me.pkcs8B64,
-    contacts: state.contacts,
-    pin: state.pin
-  }, null, 2);
-  const blob = new Blob([dump], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'meshcore-backup-'+Date.now()+'.json';
-  a.click();
-  setTimeout(()=> URL.revokeObjectURL(url), 3000);
-  toast('Backup downloaded', 'ok');
+ const dump = JSON.stringify({
+  nickname: state.me.nickname, spkiB64: state.me.spkiB64, pkcs8B64: state.me.pkcs8B64, contacts: state.contacts, pin: state.pin
+ }, null, 2);
+ const blob = new Blob([dump], {type:'application/json'});
+ const url = URL.createObjectURL(blob);
+ const a = document.createElement('a');
+ a.href = url;
+ a.download = 'meshcore-backup-'+Date.now()+'.json';
+ a.click();
+ setTimeout(()=> URL.revokeObjectURL(url), 3000);
+ toast('Backup downloaded', 'ok');
 }
-
 function toggleImport(){
-  $('importBlock').classList.toggle('hidden');
+ $('importBlock').classList.toggle('hidden');
 }
-
 async function importIdentity(){
-  const raw = $('importDataInput').value.trim();
-  if(!raw){ toast('Paste backup data first', 'err'); return; }
-  try{
-    const dump = JSON.parse(raw);
-    if(!dump.spkiB64 || !dump.pkcs8B64) throw new Error('Missing keys');
-    if(!confirm('This will replace your current identity and contacts. Continue?')) return;
-
-    const spki = b642ab(dump.spkiB64);
-    const pkcs8 = b642ab(dump.pkcs8B64);
-    const pub = await crypto.subtle.importKey('spki', spki, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['encrypt']);
-    const priv = await crypto.subtle.importKey('pkcs8', pkcs8, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['decrypt']);
-
-    state.me.keyPair = {publicKey: pub, privateKey: priv};
-    state.me.spkiB64 = dump.spkiB64;
-    state.me.pkcs8B64 = dump.pkcs8B64;
-    state.me.nickname = dump.nickname || 'User';
-    state.me.fp = await sha256Hex(spki);
-    state.me.id = shortId(state.me.fp);
-    state.contacts = dump.contacts || {};
-    state.pin = dump.pin || null;
-
-    scheduleSave();
-    renderSettings();
-    renderContacts();
-    $('importBlock').classList.add('hidden');
-    $('importDataInput').value = '';
-    toast('Identity restored successfully', 'ok');
-  } catch(e){
-    toast('Import failed: '+e.message, 'err');
-  }
+ const raw = $('importDataInput').value.trim();
+ if(!raw){ toast('Paste backup data first', 'err'); return; }
+ try{
+  const dump = JSON.parse(raw);
+  if(!dump.spkiB64 || !dump.pkcs8B64) throw new Error('Missing keys');
+  if(!confirm('This will replace your current identity and contacts. Continue?')) return;
+  const spki = b642ab(dump.spkiB64);
+  const pkcs8 = b642ab(dump.pkcs8B64);
+  const pub = await crypto.subtle.importKey('spki', spki, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['encrypt']);
+  const priv = await crypto.subtle.importKey('pkcs8', pkcs8, {name:'RSA-OAEP',hash:'SHA-256'}, true, ['decrypt']);
+  state.me.keyPair = {publicKey: pub, privateKey: priv};
+  state.me.spkiB64 = dump.spkiB64;
+  state.me.pkcs8B64 = dump.pkcs8B64;
+  state.me.nickname = dump.nickname || 'User';
+  state.me.fp = await sha256Hex(spki);
+  state.me.id = shortId(state.me.fp);
+  state.contacts = dump.contacts || {};
+  state.pin = dump.pin || null;
+  scheduleSave();
+  renderSettings();
+  renderContacts();
+  $('importBlock').classList.add('hidden');
+  $('importDataInput').value = '';
+  toast('Identity restored successfully', 'ok');
+ } catch(e){
+  toast('Import failed: '+e.message, 'err');
+ }
 }
-
 function nukeApp(){
-  if(!confirm('DELETE EVERYTHING? This cannot be undone.')) return;
-  if(!confirm('Are you absolutely sure? All contacts and messages will be lost.')) return;
-  // close all connections
-  for(const [pid, conn] of Object.entries(net.conns)){
-    try{ if(conn.dc) conn.dc.close(); } catch(e){}
-    try{ if(conn.pc) conn.pc.close(); } catch(e){}
-  }
-  localStorage.removeItem(LOCAL_KEY);
-  toast('All data deleted — reloading...', 'ok');
-  setTimeout(()=> location.reload(), 1200);
+ if(!confirm('DELETE EVERYTHING? This cannot be undone.')) return;
+ if(!confirm('Are you absolutely sure? All contacts and messages will be lost.')) return;
+ for(const [pid, conn] of Object.entries(net.conns)){
+  try{ if(conn.dc) conn.dc.close(); } catch(e){}
+  try{ if(conn.pc) conn.pc.close(); } catch(e){}
+ }
+ localStorage.removeItem(LOCAL_KEY);
+ toast('All data deleted — reloading...', 'ok');
+ setTimeout(()=> location.reload(), 1200);
 }
-
 function copyBox(boxId){
-  const text = $(boxId).textContent;
-  if(!text){ toast('Nothing to copy', 'err'); return; }
-  navigator.clipboard.writeText(text)
-    .then(()=> toast('Copied to clipboard', 'ok'))
-    .catch(()=> toast('Copy failed — select manually', 'err'));
+ const text = $(boxId).textContent;
+ if(!text){ toast('Nothing to copy', 'err'); return; }
+ navigator.clipboard.writeText(text)
+  .then(()=> toast('Copied to clipboard', 'ok'))
+  .catch(()=> toast('Copy failed — select manually', 'err'));
 }
 
 /* ── PIN / Lock screen ── */
 let pinBuffer = '';
-
 function enterPin(val){
-  if(val === 'C'){ pinBuffer = ''; updatePinDots(); return; }
-  if(val === 'X'){ pinBuffer = pinBuffer.slice(0,-1); updatePinDots(); return; }
-  if(pinBuffer.length >= 4) return;
-  pinBuffer += val;
-  updatePinDots();
-  if(pinBuffer.length === 4) checkPin();
+ if(val === 'C'){ pinBuffer = ''; updatePinDots(); return; }
+ if(val === 'X'){ pinBuffer = pinBuffer.slice(0,-1); updatePinDots(); return; }
+ if(pinBuffer.length >= 4) return;
+ pinBuffer += val;
+ updatePinDots();
+ if(pinBuffer.length === 4) checkPin();
 }
-
 function updatePinDots(){
-  const dots = document.querySelectorAll('#lockDots .pin-dot');
-  dots.forEach((d,i)=> d.classList.toggle('filled', i < pinBuffer.length));
+ const dots = document.querySelectorAll('#lockDots .pin-dot');
+ dots.forEach((d,i)=> d.classList.toggle('filled', i < pinBuffer.length));
 }
-
 function checkPin(){
-  if(pinBuffer === state.pin){
-    $('lockScreen').classList.add('hidden');
-    pinBuffer = '';
-    updatePinDots();
-    $('lockMsg').textContent = 'Enter PIN';
-    $('lockMsg').style.color = 'var(--muted)';
-  } else {
-    $('lockMsg').textContent = 'Incorrect PIN — try again';
-    $('lockMsg').style.color = 'var(--red)';
-    pinBuffer = '';
-    updatePinDots();
-  }
+ if(pinBuffer === state.pin){
+  $('lockScreen').classList.add('hidden');
+  pinBuffer = '';
+  updatePinDots();
+  $('lockMsg').textContent = 'Enter PIN';
+  $('lockMsg').style.color = 'var(--muted)';
+ } else {
+  $('lockMsg').textContent = 'Incorrect PIN — try again';
+  $('lockMsg').style.color = 'var(--red)';
+  pinBuffer = '';
+  updatePinDots();
+ }
 }
-
-// lock on visibility hidden if pin set
 document.addEventListener('visibilitychange', ()=>{
-  if(document.visibilityState==='hidden' && state.pin){
-    // set a flag; show lock when visible again
-    document.body._shouldLock = true;
-  }
-  if(document.visibilityState==='visible' && document.body._shouldLock && state.pin){
-    document.body._shouldLock = false;
-    $('lockScreen').classList.remove('hidden');
-    pinBuffer = '';
-    updatePinDots();
-  }
+ if(document.visibilityState==='hidden' && state.pin){
+  document.body._shouldLock = true;
+ }
+ if(document.visibilityState==='visible' && document.body._shouldLock && state.pin){
+  document.body._shouldLock = false;
+  $('lockScreen').classList.remove('hidden');
+  pinBuffer = '';
+  updatePinDots();
+ }
 });
 
 /* ── Splash + Boot ── */
 async function boot(){
-  // show splash 1.8s then boot
-  const existed = await loadState();
-  if(!existed){
-    await generateIdentity();
-    state.me.nickname = 'User';
-    saveState();
-  }
-
-  await new Promise(r=> setTimeout(r, 1800));
-
-  // fade out splash
-  const splash = $('splash');
-  splash.style.opacity = '0';
-  setTimeout(()=> splash.classList.add('hidden'), 500);
-
-  // show lock if pin set
-  if(state.pin){
-    $('lockScreen').classList.remove('hidden');
-  }
-
-  // init UI
-  renderContacts();
-  renderBroadcasts();
-  renderSettings();
-  updateConnBadge();
-  startHealthPolling();
+ const existed = await loadState();
+ if(!existed){
+  await generateIdentity();
+  state.me.nickname = 'User';
+  saveState();
+ }
+ await new Promise(r=> setTimeout(r, 1800));
+ const splash = $('splash');
+ splash.style.opacity = '0';
+ setTimeout(()=> splash.classList.add('hidden'), 500);
+ if(state.pin){
+  $('lockScreen').classList.remove('hidden');
+ }
+ renderContacts();
+ renderBroadcasts();
+ renderSettings();
+ updateConnBadge();
+ startHealthPolling();
 }
-
 boot();
 </script>
 </body>
 </html>
-
-
-
-
-    
