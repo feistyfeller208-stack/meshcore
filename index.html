@@ -81,16 +81,16 @@
  /* ── Chat screen ── */
  #screen-chat { z-index: 60; }
 
- /* Chat header — info header only (not the contact) */
+ /* Chat header */
  .chat-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
  .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; }
- .chat-header-info { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
- .chat-header-info:active { background: var(--panel-light); }
  .chat-header-center { flex: 1; }
  .chat-header h3 { font-size: 18px; font-weight: 700; }
  .chat-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
- .chat-header-tap-hint { font-size: 11px; color: var(--border-hl); margin-top: 1px; letter-spacing: 0.3px; }
+ .chat-header-info { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 6px 10px; border-radius: 12px; -webkit-tap-highlight-color: transparent; transition: background 0.15s; }
+ .chat-header-info:active { background: var(--panel-light); }
  .info-icon { font-size: 18px; opacity: 0.7; }
+ .chat-header-tap-hint { font-size: 11px; color: var(--border-hl); letter-spacing: 0.3px; }
 
  .chat-messages { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
  .chat-messages::-webkit-scrollbar { width: 3px; }
@@ -114,7 +114,7 @@
  .reply-preview-name { font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
  .reply-cancel-btn { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; }
 
- /* Reply quote inside message bubble - FIXED: properly anchored */
+ /* FIX #2: Reply quote inside message bubble - properly anchored */
  .msg-reply-quote { background: rgba(0,0,0,0.18); border-left: 3px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 10px; margin-bottom: 7px; font-size: 12px; line-height: 1.5; }
  .msg.me .msg-reply-quote { background: rgba(0,0,0,0.18); border-left-color: rgba(0,0,0,0.3); }
  .msg-reply-quote-name { font-weight: 700; margin-bottom: 2px; opacity: 0.85; }
@@ -140,7 +140,7 @@
  .composer-btn.send { background: var(--accent); color: #000; }
  .composer-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
- /* FIX #1: Recording bar - only visible when recording active, not always */
+ /* FIX #1: Recording bar - hidden by default, only visible when recording active */
  .recording-bar { flex-shrink: 0; display: none; gap: 12px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
  .recording-bar.active { display: flex; }
  .rec-dot { width: 12px; height: 12px; background: var(--red); border-radius: 50%; animation: recPulse 1s ease-in-out infinite; flex-shrink: 0; }
@@ -154,8 +154,13 @@
  .msg.me { align-self: flex-end; background: var(--accent); color: #000; border-bottom-right-radius: 4px; }
  .msg.peer { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
  .msg.sys { align-self: center; background: transparent; color: var(--muted); font-size: 13px; max-width: 92%; text-align: center; padding: 4px 10px; }
- .msg-time { font-size: 11px; opacity: 0.65; margin-top: 5px; text-align: right; }
- .msg.peer .msg-time { text-align: left; }
+ .msg-time { font-size: 11px; opacity: 0.65; margin-top: 5px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+ .msg.peer .msg-time { text-align: left; justify-content: flex-start; }
+
+ /* FIX #3: Pending clock styling */
+ .msg-pending { opacity: 0.75; }
+ .msg-status { font-size: 11px; }
+ .pending-clock { font-size: 13px; }
 
  /* Voice */
  .voice-msg { display: flex; align-items: center; gap: 10px; min-width: 160px; }
@@ -226,11 +231,6 @@
  .toast.ok { border-color: var(--green); }
  .toast.err { border-color: var(--red); }
  @keyframes toastIn { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
-
- /* FIX #3: Pending clock styling - shows clock icon for pending messages */
- .msg-pending { opacity: 0.75; }
- .msg-status { font-size: 11px; color: var(--muted); margin-left: 5px; }
- .pending-clock { display: inline-block; font-size: 12px; margin-left: 4px; }
 </style>
 </head>
 <body>
@@ -408,6 +408,7 @@
      <p id="chatPeerSub"></p>
     </div>
    </div>
+   <!-- FIX #4: Info button is the ONLY way to access contact info from chat -->
    <div class="chat-header-info" onclick="openContactInfoFromChat()">
     <span class="info-icon">ⓘ</span>
     <span class="chat-header-tap-hint">Info</span>
@@ -435,7 +436,7 @@
    <button class="reply-cancel-btn" onclick="cancelReply()">×</button>
   </div>
 
-  <!-- FIX #1: Recording bar - hidden by default, only shows when recording -->
+  <!-- FIX #1: Recording bar - hidden by default, only shows when .active class is added -->
   <div class="recording-bar" id="recordingBar">
    <div class="rec-dot"></div>
    <div class="rec-timer" id="recTimer">0:00</div>
@@ -508,8 +509,7 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-
- 'use strict';
+'use strict';
 const te = new TextEncoder(), td = new TextDecoder();
 const LOCAL_KEY = 'meshcore_v4';
 const CHUNK_SIZE = 16384;
@@ -569,7 +569,7 @@ let state = {
  broadcasts:[],
  pin:null,
  notificationsEnabled:false,
- messageQueue:{} // NEW: peerId -> array of pending messages
+ messageQueue:{}
 };
 const net = {
  conns:{},
@@ -582,8 +582,8 @@ const net = {
  recordingTimer:null,
  saveTimer:null,
  healthTimer:null,
- typingTimers:{}, // NEW: peerId -> timeout
- replyingTo:null // NEW: { id, text, from }
+ typingTimers:{},
+ replyingTo:null
 };
 let activeChat = null;
 let infoContactId = null;
@@ -597,7 +597,7 @@ function saveState(){
   broadcasts:state.broadcasts.slice(-50),
   pin:state.pin,
   notificationsEnabled:state.notificationsEnabled,
-  messageQueue:state.messageQueue // NEW
+  messageQueue:state.messageQueue
  };
  for(const [pid, msgs] of Object.entries(state.chats)){
   dump.chats[pid] = msgs.filter(m=>m.type!=='file'&&m.type!=='voice').slice(-200);
@@ -619,7 +619,7 @@ async function loadState(){
   state.broadcasts = dump.broadcasts || [];
   state.pin = dump.pin || null;
   state.notificationsEnabled = dump.notificationsEnabled || false;
-  state.messageQueue = dump.messageQueue || {}; // NEW
+  state.messageQueue = dump.messageQueue || {};
   if(dump.me && dump.me.spkiB64 && dump.me.pkcs8B64){
    state.me.nickname = dump.me.nickname || 'User';
    state.me.spkiB64 = dump.me.spkiB64;
@@ -688,7 +688,7 @@ function wireDataChannel(dc, peerId){
   dcSend(peerId, {type:'hello', nickname:state.me.nickname, meshId:state.me.id, spkiB64:state.me.spkiB64});
   setContactOnline(peerId, true);
   renderContacts();
-  flushMessageQueue(peerId); // NEW
+  flushMessageQueue(peerId);
   if(net.pendingReconnect[peerId]) delete net.pendingReconnect[peerId];
   toast(((state.contacts[peerId]||{}).nickname||'Peer')+' connected', 'ok');
  };
@@ -698,7 +698,7 @@ function wireDataChannel(dc, peerId){
   setContactOnline(peerId, false);
   renderContacts();
   updateChatHeader();
-  hideTypingIndicator(peerId); // NEW
+  hideTypingIndicator(peerId);
   toast(((state.contacts[peerId]||{}).nickname||'Peer')+' disconnected');
  };
  dc.onerror = ()=>{
@@ -707,7 +707,7 @@ function wireDataChannel(dc, peerId){
   setContactOnline(peerId, false);
   renderContacts();
   updateChatHeader();
-  hideTypingIndicator(peerId); // NEW
+  hideTypingIndicator(peerId);
  };
  dc.onmessage = e=>{ handleDCMessage(peerId, e.data); };
 }
@@ -743,7 +743,7 @@ function startHealthPolling(){
    }
   }
   updateConnBadge();
-  updateTabBadge(); // NEW
+  updateTabBadge();
  }, 4000);
 }
 
@@ -760,7 +760,6 @@ function flushMessageQueue(peerId){
  for(const msg of queue){
   if(dcSend(peerId, msg)){
    sent++;
-   // Mark message as delivered in chat history
    const chatMsg = (state.chats[peerId]||[]).find(m=>m.id===msg.id);
    if(chatMsg){ 
     chatMsg.pending = false; 
@@ -781,7 +780,7 @@ function flushMessageQueue(peerId){
 let lastTypingSent = 0;
 function sendTypingIndicator(peerId){
  const now = Date.now();
- if(now - lastTypingSent < 2000) return; // throttle
+ if(now - lastTypingSent < 2000) return;
  lastTypingSent = now;
  dcSend(peerId, {type:'typing'});
 }
@@ -815,7 +814,7 @@ function cancelReply(){
  $('replyPreview').classList.remove('visible');
 }
 
-/* ── FIX #2: Reply quote floating loose - properly anchored in message bubble ── */
+/* ── FIX #2: Proper anchored reply quotes ── */
 function buildReplyQuoteHTML(replyTo, peerId){
  if(!replyTo) return '';
  const replyName = replyTo.from === 'me' ? 'You' : (state.contacts[peerId]||{}).nickname || 'Peer';
@@ -900,7 +899,7 @@ function handleDCMessage(peerId, raw){
   case 'broadcast': handleIncomingBroadcast(peerId, msg); break;
   case 'reconnect_offer': handleReconnectOffer(peerId, msg); break;
   case 'delivered': markDelivered(peerId, msg.msgId); break;
-  case 'typing': showTypingIndicator(peerId); break; // NEW
+  case 'typing': showTypingIndicator(peerId); break;
  }
 }
 function handleHello(peerId, msg){
@@ -929,7 +928,7 @@ function handleIncomingChat(peerId, msg){
   from:'peer', 
   text: msg.text, 
   time: stamp(),
-  replyTo: msg.replyTo || null // NEW
+  replyTo: msg.replyTo || null
  };
  state.chats[peerId].push(entry);
  scheduleSave();
@@ -940,7 +939,7 @@ function handleIncomingChat(peerId, msg){
  } else {
   state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
   renderContacts();
-  updateTabBadge(); // NEW
+  updateTabBadge();
   notifyUser(contact ? contact.nickname : 'Peer', msg.text);
  }
 }
@@ -955,7 +954,7 @@ function handleIncomingVoice(peerId, msg){
  } else {
   state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
   renderContacts();
-  updateTabBadge(); // NEW
+  updateTabBadge();
  }
 }
 function handleFileMeta(peerId, msg){
@@ -972,7 +971,7 @@ function handleFileMeta(peerId, msg){
  } else {
   state.contacts[peerId].unread = (state.contacts[peerId].unread||0)+1;
   renderContacts();
-  updateTabBadge(); // NEW
+  updateTabBadge();
  }
 }
 function handleFileChunk(peerId, buf){
@@ -1295,7 +1294,7 @@ function renderContacts(){
  if(!ids.length){
   list.innerHTML = '<p class="empty-state">No contacts yet.<br>Use the Link tab to connect.</p>';
   updateConnBadge();
-  updateTabBadge(); // NEW
+  updateTabBadge();
   return;
  }
  ids.sort((a,b)=>{
@@ -1308,7 +1307,7 @@ function renderContacts(){
   const c = state.contacts[id];
   const unread = c.unread || 0;
   return `
-  <div class="contact-item" onclick="openContactInfo('${id}')">
+  <div class="contact-item" onclick="openChat('${id}')">
    <div class="contact-info">
     <h3>${esc(c.nickname)}</h3>
     <p>${esc(c.meshId||id)} ${c.lastSeen ? '· '+new Date(c.lastSeen).toLocaleDateString() : ''}</p>
@@ -1320,7 +1319,7 @@ function renderContacts(){
   </div>`;
  }).join('');
  updateConnBadge();
- updateTabBadge(); // NEW
+ updateTabBadge();
 }
 function updateConnBadge(){
  const online = Object.values(state.contacts).filter(c=>c.online).length;
@@ -1351,7 +1350,7 @@ function openChatFromInfo(){
  setTimeout(()=> openChat(infoContactId), 260);
 }
 
-/* ── FIX #4: Contact info accessible from info header only, not by tapping contact in chat header ── */
+/* ── FIX #4: Restricted contact info to ONLY the chat header info button ── */
 function openContactInfoFromChat(){
  if(!activeChat) return;
  openContactInfo(activeChat);
@@ -1371,7 +1370,7 @@ function deleteContact(){
  delete state.contacts[infoContactId];
  delete state.chats[infoContactId];
  if(net.pendingReconnect[infoContactId]) delete net.pendingReconnect[infoContactId];
- if(state.messageQueue[infoContactId]) delete state.messageQueue[infoContactId]; // NEW
+ if(state.messageQueue[infoContactId]) delete state.messageQueue[infoContactId];
  scheduleSave();
  renderContacts();
  closeScreen('screen-contact-info');
@@ -1392,7 +1391,7 @@ function openChat(peerId){
   state.contacts[peerId].unread = 0;
   scheduleSave();
   renderContacts();
-  updateTabBadge(); // NEW
+  updateTabBadge();
  }
  updateChatHeader();
  renderChatHistory(peerId);
@@ -1400,13 +1399,13 @@ function openChat(peerId){
  setTimeout(()=>{
   scrollChatBottom();
   $('chatInput').focus();
-  initSwipeHandlers(); // NEW
+  initSwipeHandlers();
  }, 60);
 }
 function closeChat(){
  closeScreen('screen-chat');
  activeChat = null;
- cancelReply(); // NEW
+ cancelReply();
  if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
   try{ net.mediaRecorder.stop(); } catch(e){ }
  }
@@ -1462,7 +1461,7 @@ function buildMsgEl(m, peerId){
  const msgEl = document.createElement('div');
  msgEl.className = 'msg '+(isMe ? 'me' : 'peer') + (m.pending ? ' msg-pending' : '');
 
- // FIX #2: Properly anchored reply quote using helper function
+ // FIX #2: Proper anchored reply quote
  const replyHTML = buildReplyQuoteHTML(m.replyTo, peerId);
 
  if(m.type === 'text'){
@@ -1471,9 +1470,8 @@ function buildMsgEl(m, peerId){
    <div>${esc(m.text)}</div>
    <div class="msg-time">
     ${esc(m.time||'')} 
-    ${isMe ? `<span class="msg-tick">${m.pending ? '🕓' : (m.delivered ? '✓✓' : '✓')}</span>` : ''}
+    ${isMe ? `<span class="msg-tick">${m.pending ? '<span class="pending-clock">🕓</span>' : (m.delivered ? '✓✓' : '✓')}</span>` : ''}
    </div>`;
-  // NEW: Long press to reply
   msgEl.addEventListener('contextmenu', e=>{
    e.preventDefault();
    startReply(m.id, m.text, m.from);
@@ -1510,7 +1508,6 @@ function buildMsgEl(m, peerId){
 
  wrap.appendChild(msgEl);
 
- // NEW: Delete button for swipe
  if(m.from !== 'sys'){
   const delBtn = document.createElement('button');
   delBtn.className = 'msg-delete-btn';
@@ -1563,7 +1560,7 @@ function sendChat(){
   time: stamp(), 
   delivered: false, 
   pending: !isOnline,
-  replyTo: net.replyingTo ? { id: net.replyingTo.id, text: net.replyingTo.text, from: net.replyingTo.from } : null // NEW
+  replyTo: net.replyingTo ? { id: net.replyingTo.id, text: net.replyingTo.text, from: net.replyingTo.from } : null
  };
  if(!state.chats[activeChat]) state.chats[activeChat] = [];
  state.chats[activeChat].push(entry);
@@ -1571,24 +1568,23 @@ function sendChat(){
  appendMessage(entry, activeChat);
  scrollChatBottom();
  input.value = '';
- cancelReply(); // NEW
+ cancelReply();
 
  const msgPayload = { 
   type:'chat', 
   id, 
   text,
-  replyTo: entry.replyTo // NEW
+  replyTo: entry.replyTo
  };
 
  if(isOnline){
   const sent = dcSend(activeChat, msgPayload);
   if(!sent){
-   queueMessage(activeChat, msgPayload); // NEW
+   queueMessage(activeChat, msgPayload);
    toast('Message queued — peer reconnecting', 'err');
   } else {
    entry.pending = false;
    scheduleSave();
-   // Update message UI to remove pending clock
    const msgEl = document.getElementById('msg-'+id);
    if(msgEl){
     const tick = msgEl.querySelector('.msg-tick');
@@ -1597,12 +1593,11 @@ function sendChat(){
    }
   }
  } else {
-  queueMessage(activeChat, msgPayload); // NEW
+  queueMessage(activeChat, msgPayload);
   toast('Peer offline — message queued', 'err');
  }
 }
 
-// NEW: Typing indicator on input
 $('chatInput').addEventListener('input', ()=>{
  if(!activeChat) return;
  sendTypingIndicator(activeChat);
@@ -1898,7 +1893,7 @@ document.addEventListener('visibilitychange', ()=>{
   if(e.touches.length !== 1) return;
   sx = e.touches[0].clientX;
   sy = e.touches[0].clientY;
-  tracking = sx < 28; // only trigger from left edge
+  tracking = sx < 28;
  }, {passive:true});
  document.addEventListener('touchend', e=>{
   if(!tracking) return;
@@ -1906,7 +1901,6 @@ document.addEventListener('visibilitychange', ()=>{
   const dx = e.changedTouches[0].clientX - sx;
   const dy = Math.abs(e.changedTouches[0].clientY - sy);
   if(dx > 60 && dy < 80){
-   // find topmost active screen and close it
    const screens = [...document.querySelectorAll('.screen.active')];
    if(screens.length){
     const top = screens.reduce((a,b)=> parseInt(getComputedStyle(a).zIndex||0) >= parseInt(getComputedStyle(b).zIndex||0) ? a : b);
