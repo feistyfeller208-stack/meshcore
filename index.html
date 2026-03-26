@@ -81,14 +81,16 @@
  /* ── Chat screen ── */
  #screen-chat { z-index: 60; }
 
- /* Chat header — tappable for contact info */
+ /* Chat header — info header only (not the contact) */
  .chat-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
- .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; padding: 4px 0; -webkit-tap-highlight-color: transparent; }
- .chat-header-left:active { opacity: 0.7; }
+ .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+ .chat-header-info { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
+ .chat-header-info:active { background: var(--panel-light); }
  .chat-header-center { flex: 1; }
  .chat-header h3 { font-size: 18px; font-weight: 700; }
  .chat-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
  .chat-header-tap-hint { font-size: 11px; color: var(--border-hl); margin-top: 1px; letter-spacing: 0.3px; }
+ .info-icon { font-size: 18px; opacity: 0.7; }
 
  .chat-messages { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
  .chat-messages::-webkit-scrollbar { width: 3px; }
@@ -112,7 +114,7 @@
  .reply-preview-name { font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
  .reply-cancel-btn { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; }
 
- /* Reply quote inside message bubble */
+ /* Reply quote inside message bubble - FIXED: properly anchored */
  .msg-reply-quote { background: rgba(0,0,0,0.18); border-left: 3px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 10px; margin-bottom: 7px; font-size: 12px; line-height: 1.5; }
  .msg.me .msg-reply-quote { background: rgba(0,0,0,0.18); border-left-color: rgba(0,0,0,0.3); }
  .msg-reply-quote-name { font-weight: 700; margin-bottom: 2px; opacity: 0.85; }
@@ -138,147 +140,7 @@
  .composer-btn.send { background: var(--accent); color: #000; }
  .composer-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
- .recording-bar { flex-shrink: 0
-\<Streaming stoppped because the conversation grew too long for this model\><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MeshCore</title>
-<style>
- :root {
-  --bg: #09111a; --bg2: #121e2d; --panel: #172536; --panel-light: #1d2d41;
-  --border: #2a3c55; --border-hl: #415a7d;
-  --text: #e8eef7; --muted: #93a6bf;
-  --accent: #6b95f5; --accent-hover: #4f76d4;
-  --green: #88d7b4; --red: #d78998;
-  --nav-h: 85px;
-  --shadow: 0 4px 20px rgba(0,0,0,0.4);
- }
- * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
- body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; display: flex; flex-direction: column; font-size: 16px; }
-
- .hidden { display: none !important; }
-
- .btn { border: none; padding: 16px 24px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; color: #fff; background: var(--panel-light); display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; min-height: 52px; width: 100%; }
- .btn:active { transform: scale(0.96); }
- .btn-primary { background: var(--accent); color: #081222; }
- .btn-danger { background: var(--red); color: #20080d; }
- .btn-success { background: var(--green); color: #0b1712; }
-
- .input, .textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 14px; padding: 16px 18px; outline: none; font-size: 16px; transition: 0.2s; }
- .input:focus, .textarea:focus { border-color: var(--accent); }
- .textarea { resize: vertical; min-height: 100px; }
-
- .code-box { background: var(--bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border); font-family: monospace; font-size: 13px; word-break: break-all; max-height: 150px; overflow-y: auto; color: var(--green); line-height: 1.5; }
- .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; }
- .card h2 { font-size: 20px; }
- .label { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
- .divider { height: 1px; background: var(--border); margin: 4px 0; }
-
- /* Splash & Lock */
- #splash, #lockScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
- .spider-web { width: 140px; height: 140px; animation: meshPulse 2s infinite ease-in-out; }
- @keyframes meshPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.05);opacity:0.8} }
- .title-splash { font-size: 28px; font-weight: 800; margin-top: 24px; letter-spacing: 3px; }
-
- .pin-dots { display: flex; gap: 14px; margin: 24px 0; }
- .pin-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); }
- .pin-dot.filled { background: var(--accent); }
- .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
- .num-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
- .num-btn:active { background: var(--panel-light); }
-
- /* App shell */
- #app { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
- #base-layer { position: absolute; inset: 0; display: flex; flex-direction: column; }
-
- .view { display: none; flex-direction: column; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; padding-bottom: 20px; }
- .view.active { display: flex; }
- .view-header { padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
- .view-header h1 { font-size: 26px; font-weight: 800; }
- .badge { background: var(--panel-light); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent); }
-
- /* Bottom Nav */
- #bottomNav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
- .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; transition: 0.2s; gap: 6px; position: relative; }
- .nav-item svg { width: 26px; height: 26px; fill: currentColor; }
- .nav-item span { font-size: 11px; font-weight: 700; }
- .nav-item.active { color: var(--accent); }
- .nav-item:active { background: rgba(255,255,255,0.05); }
-
- /* Nav unread dot */
- .nav-unread { position: absolute; top: 8px; right: calc(50% - 18px); width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: none; }
- .nav-item.has-unread .nav-unread { display: block; }
-
- /* Screens */
- .screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--bg); transform: translateX(100%); transition: transform 0.28s cubic-bezier(.4,0,.2,1); z-index: 50; }
- .screen.active { transform: translateX(0); }
- .screen-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
- .screen-header h2 { font-size: 20px; font-weight: 700; flex: 1; }
- .back-btn { background: none; border: none; color: var(--accent); font-size: 16px; font-weight: 700; cursor: pointer; padding: 6px 2px; }
- .screen-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; display: flex; flex-direction: column; gap: 0; }
-
- /* ── Chat screen ── */
- #screen-chat { z-index: 60; }
-
- /* Chat header — tappable for contact info */
- .chat-header { padding: 14px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
- .chat-header-left { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; padding: 4px 0; -webkit-tap-highlight-color: transparent; }
- .chat-header-left:active { opacity: 0.7; }
- .chat-header-center { flex: 1; }
- .chat-header h3 { font-size: 18px; font-weight: 700; }
- .chat-header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
- .chat-header-tap-hint { font-size: 11px; color: var(--border-hl); margin-top: 1px; letter-spacing: 0.3px; }
-
- .chat-messages { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
- .chat-messages::-webkit-scrollbar { width: 3px; }
- .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
- /* Typing indicator */
- .typing-indicator { display: none; align-items: center; gap: 8px; padding: 6px 0 2px 4px; }
- .typing-indicator.visible { display: flex; }
- .typing-indicator span { font-size: 13px; color: var(--muted); }
- .typing-dots { display: flex; gap: 4px; align-items: center; }
- .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: typingBounce 1.2s infinite ease-in-out; }
- .typing-dot:nth-child(2) { animation-delay: 0.2s; }
- .typing-dot:nth-child(3) { animation-delay: 0.4s; }
- @keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-5px);opacity:1} }
-
- /* Reply preview in composer */
- .reply-preview { display: none; flex-shrink: 0; padding: 10px 16px; background: var(--bg2); border-top: 1px solid var(--border); }
- .reply-preview.visible { display: flex; align-items: center; gap: 10px; }
- .reply-preview-bar { width: 3px; background: var(--accent); border-radius: 2px; align-self: stretch; flex-shrink: 0; }
- .reply-preview-text { flex: 1; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
- .reply-preview-name { font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
- .reply-cancel-btn { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; flex-shrink: 0; }
-
- /* Reply quote inside message bubble */
- .msg-reply-quote { background: rgba(0,0,0,0.18); border-left: 3px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 10px; margin-bottom: 7px; font-size: 12px; line-height: 1.5; }
- .msg.me .msg-reply-quote { background: rgba(0,0,0,0.18); border-left-color: rgba(0,0,0,0.3); }
- .msg-reply-quote-name { font-weight: 700; margin-bottom: 2px; opacity: 0.85; }
- .msg-reply-quote-text { opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  /* Swipe-to-delete message */
- .msg-wrap { position: relative; display: flex; align-items: center; }
- .msg-wrap.me { justify-content: flex-end; }
- .msg-wrap.peer { justify-content: flex-start; }
- .msg-wrap.sys { justify-content: center; }
- .msg-delete-btn { position: absolute; right: 0; opacity: 0; pointer-events: none; background: var(--red); border: none; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 700; color: #20080d; cursor: pointer; transition: opacity 0.18s, transform 0.18s; transform: scale(0.85); white-space: nowrap; }
- .msg-wrap.peer .msg-delete-btn { right: auto; left: 0; }
- .msg-wrap.swipe-revealed .msg-delete-btn { opacity: 1; pointer-events: auto; transform: scale(1); }
- .msg-wrap .msg { transition: transform 0.18s cubic-bezier(.4,0,.2,1); }
- .msg-wrap.swipe-revealed.me .msg { transform: translateX(-82px); }
- .msg-wrap.swipe-revealed.peer .msg { transform: translateX(82px); }
-
- .chat-composer { flex-shrink: 0; display: flex; gap: 10px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
- .chat-composer input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 24px; padding: 14px 18px; outline: none; font-size: 16px; min-width: 0; }
- .chat-composer input:focus { border-color: var(--accent); }
- .composer-btn { background: var(--panel-light); color: var(--text); border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
- .composer-btn:active { transform: scale(0.9); }
- .composer-btn.send { background: var(--accent); color: #000; }
- .composer-btn svg { width: 22px; height: 22px; fill: currentColor; }
-
+ /* FIX #1: Recording bar - only visible when recording active, not always */
  .recording-bar { flex-shrink: 0; display: none; gap: 12px; padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border); align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
  .recording-bar.active { display: flex; }
  .rec-dot { width: 12px; height: 12px; background: var(--red); border-radius: 50%; animation: recPulse 1s ease-in-out infinite; flex-shrink: 0; }
@@ -288,7 +150,7 @@
  .rec-send { padding: 10px 20px; background: var(--accent); border: none; color: #000; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
 
  /* Messages */
- .msg { max-width: 78%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; word-break: break-word; }
+ .msg { max-width: 78%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; word-break: break-word; position: relative; }
  .msg.me { align-self: flex-end; background: var(--accent); color: #000; border-bottom-right-radius: 4px; }
  .msg.peer { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
  .msg.sys { align-self: center; background: transparent; color: var(--muted); font-size: 13px; max-width: 92%; text-align: center; padding: 4px 10px; }
@@ -365,9 +227,10 @@
  .toast.err { border-color: var(--red); }
  @keyframes toastIn { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
 
- /* Pending/queued message indicator */
- .msg-pending { opacity: 0.65; }
+ /* FIX #3: Pending clock styling - shows clock icon for pending messages */
+ .msg-pending { opacity: 0.75; }
  .msg-status { font-size: 11px; color: var(--muted); margin-left: 5px; }
+ .pending-clock { display: inline-block; font-size: 12px; margin-left: 4px; }
 </style>
 </head>
 <body>
@@ -538,15 +401,18 @@
  <!-- CHAT SCREEN -->
  <div class="screen" id="screen-chat">
   <div class="chat-header">
-   <div class="chat-header-left" onclick="openContactInfoFromChat()">
+   <div class="chat-header-left">
     <div class="status-dot" id="chatLiveDot"></div>
     <div class="chat-header-center">
      <h3 id="chatPeerName">Chat</h3>
      <p id="chatPeerSub"></p>
-     <div class="chat-header-tap-hint">Tap for info</div>
     </div>
    </div>
-   <button class="back-btn" onclick="closeChat()">&#8592; Back</button>
+   <div class="chat-header-info" onclick="openContactInfoFromChat()">
+    <span class="info-icon">ⓘ</span>
+    <span class="chat-header-tap-hint">Info</span>
+   </div>
+   <button class="back-btn" onclick="closeChat()">✕</button>
   </div>
   
   <div class="chat-messages" id="chatMessages"></div>
@@ -569,6 +435,7 @@
    <button class="reply-cancel-btn" onclick="cancelReply()">×</button>
   </div>
 
+  <!-- FIX #1: Recording bar - hidden by default, only shows when recording -->
   <div class="recording-bar" id="recordingBar">
    <div class="rec-dot"></div>
    <div class="rec-timer" id="recTimer">0:00</div>
@@ -594,7 +461,7 @@
  <!-- CONTACT INFO SCREEN -->
  <div class="screen" id="screen-contact-info">
   <div class="screen-header">
-   <button class="back-btn" onclick="closeScreen('screen-contact-info')">&#8592; Back</button>
+   <button class="back-btn" onclick="closeScreen('screen-contact-info')">← Back</button>
    <h2 id="infoName">Contact</h2>
   </div>
   <div class="screen-body" style="gap:18px;">
@@ -898,6 +765,7 @@ function flushMessageQueue(peerId){
    if(chatMsg){ 
     chatMsg.pending = false; 
     chatMsg.delivered = true;
+    scheduleSave();
    }
   }
  }
@@ -945,6 +813,17 @@ function startReply(msgId, text, from){
 function cancelReply(){
  net.replyingTo = null;
  $('replyPreview').classList.remove('visible');
+}
+
+/* ── FIX #2: Reply quote floating loose - properly anchored in message bubble ── */
+function buildReplyQuoteHTML(replyTo, peerId){
+ if(!replyTo) return '';
+ const replyName = replyTo.from === 'me' ? 'You' : (state.contacts[peerId]||{}).nickname || 'Peer';
+ return `
+  <div class="msg-reply-quote">
+   <div class="msg-reply-quote-name">${esc(replyName)}</div>
+   <div class="msg-reply-quote-text">${esc(replyTo.text||'')}</div>
+  </div>`;
 }
 
 /* ── NEW: Swipe to Delete Message ── */
@@ -1346,7 +1225,11 @@ async function finalizeInvite(){
 function markDelivered(peerId, msgId){
  const msgs = state.chats[peerId] || [];
  const m = msgs.find(x=>x.id===msgId);
- if(m){ m.delivered = true; scheduleSave(); }
+ if(m){ 
+  m.delivered = true; 
+  m.pending = false;
+  scheduleSave(); 
+ }
  const el = document.getElementById('msg-'+msgId);
  if(el){
   const tick = el.querySelector('.msg-tick');
@@ -1468,7 +1351,7 @@ function openChatFromInfo(){
  setTimeout(()=> openChat(infoContactId), 260);
 }
 
-/* ── NEW: Open contact info from chat header ── */
+/* ── FIX #4: Contact info accessible from info header only, not by tapping contact in chat header ── */
 function openContactInfoFromChat(){
  if(!activeChat) return;
  openContactInfo(activeChat);
@@ -1525,7 +1408,7 @@ function closeChat(){
  activeChat = null;
  cancelReply(); // NEW
  if(net.mediaRecorder && net.mediaRecorder.state !== 'inactive'){
-  try{ net.mediaRecorder.stop(); } catch(e){}
+  try{ net.mediaRecorder.stop(); } catch(e){ }
  }
  stopRecordingUI();
 }
@@ -1579,16 +1462,8 @@ function buildMsgEl(m, peerId){
  const msgEl = document.createElement('div');
  msgEl.className = 'msg '+(isMe ? 'me' : 'peer') + (m.pending ? ' msg-pending' : '');
 
- // NEW: Reply quote
- let replyHTML = '';
- if(m.replyTo){
-  const replyName = m.replyTo.from === 'me' ? 'You' : (state.contacts[peerId]||{}).nickname || 'Peer';
-  replyHTML = `
-   <div class="msg-reply-quote">
-    <div class="msg-reply-quote-name">${esc(replyName)}</div>
-    <div class="msg-reply-quote-text">${esc(m.replyTo.text||'')}</div>
-   </div>`;
- }
+ // FIX #2: Properly anchored reply quote using helper function
+ const replyHTML = buildReplyQuoteHTML(m.replyTo, peerId);
 
  if(m.type === 'text'){
   msgEl.innerHTML = `
@@ -1596,7 +1471,7 @@ function buildMsgEl(m, peerId){
    <div>${esc(m.text)}</div>
    <div class="msg-time">
     ${esc(m.time||'')} 
-    ${isMe ? `<span class="msg-tick">${m.pending?'🕓':m.delivered?'✓✓':'✓'}</span>` : ''}
+    ${isMe ? `<span class="msg-tick">${m.pending ? '🕓' : (m.delivered ? '✓✓' : '✓')}</span>` : ''}
    </div>`;
   // NEW: Long press to reply
   msgEl.addEventListener('contextmenu', e=>{
@@ -1610,6 +1485,7 @@ function buildMsgEl(m, peerId){
    return `<div class="voice-bar" style="height:${h}px"></div>`;
   }).join('');
   msgEl.innerHTML = `
+   ${replyHTML}
    <div class="voice-msg">
     <button class="voice-play-btn" onclick="playVoice('${m.id}','${m.b64||''}',this)">▶</button>
     <div class="voice-waveform">${bars}</div>
@@ -1620,6 +1496,7 @@ function buildMsgEl(m, peerId){
  else if(m.type === 'file'){
   const ext = (m.name||'').split('.').pop().toUpperCase().slice(0,4);
   msgEl.innerHTML = `
+   ${replyHTML}
    <div class="file-msg" onclick="downloadFile('${m.id}')">
     <div class="file-icon">${esc(ext)}</div>
     <div class="file-details">
@@ -1710,6 +1587,14 @@ function sendChat(){
    toast('Message queued — peer reconnecting', 'err');
   } else {
    entry.pending = false;
+   scheduleSave();
+   // Update message UI to remove pending clock
+   const msgEl = document.getElementById('msg-'+id);
+   if(msgEl){
+    const tick = msgEl.querySelector('.msg-tick');
+    if(tick) tick.textContent = '✓';
+    msgEl.classList.remove('msg-pending');
+   }
   }
  } else {
   queueMessage(activeChat, msgPayload); // NEW
